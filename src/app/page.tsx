@@ -49,8 +49,8 @@ function VideoIntroHero(){
       pointerEvents:phase>=3?"none":"all"
     }}>
       <div style={{
-        width:phase>=2?"100vw":"clamp(260px,36vw,440px)",
-        height:phase>=2?"100vh":"clamp(180px,26vh,300px)",
+        width:"100vw",
+        height:"100vh",
         overflow:"hidden",transition:"all 1s cubic-bezier(0.16,1,0.3,1)",position:"relative",
       }}>
         <video autoPlay muted loop playsInline style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.55) contrast(1.15) saturate(0.7)"}}>
@@ -238,7 +238,7 @@ function LuxuryContext(){return(
 <R delay={0.1}><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:300,lineHeight:1.75,color:C.frost,opacity:0.45,maxWidth:420,marginBottom:52}}>Private aviation. Five-star suites. Yacht decks. The standard for premium hospitality worldwide.</p></R>
 </div>
 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:3}}>
-{[{img:"/luxury-jet.png",label:"Private Aviation"},{img:"/luxury-hotel.png",label:"Five-Star Suites"},{img:"/luxury-jetbucket.png",label:"First Class"}].map((s,i)=>(<R key={s.label} delay={0.08*i}>
+{[{img:"/luxury-hotel.png",label:"Five-Star Suites"},{img:"/luxury-jet.png",label:"Private Aviation"},{img:"/luxury-jetbucket.png",label:"First Class"}].map((s,i)=>(<R key={s.label} delay={0.08*i}>
 <div style={{position:"relative",aspectRatio:"4/3",overflow:"hidden",WebkitMaskImage:"radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)",maskImage:"radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)"}}>
 <Image src={s.img} alt={s.label} fill style={{objectFit:"cover"}}/>
 <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"48px 20px 16px",background:"linear-gradient(transparent,rgba(0,0,0,0.5))"}}><span style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.28em",textTransform:"uppercase",color:C.ice,opacity:0.8}}>{s.label}</span></div>
