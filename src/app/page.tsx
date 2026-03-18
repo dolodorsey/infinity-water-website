@@ -211,9 +211,9 @@ function SpiralGrid(){return(
 <R><div style={{fontFamily:"'DM Mono',monospace",fontSize:11,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Every Finish</div></R>
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice}}>Nine finishes.<br/><em style={{color:C.gold}}>Infinite elegance.</em></h2></R>
 </div>
-<R delay={0.2}><div style={{position:"relative",width:"100%",height:"clamp(500px,75vh,1000px)"}}>
+<R delay={0.2}><div style={{position:"relative",width:"100%",height:"clamp(350px,50vh,600px)"}}>
 <Image src="/spiral-grid.png" alt="All bottles with water spirals" fill style={{objectFit:"contain",objectPosition:"center"}}/>
-</div></R><div style={{height:32}}/></section>)}
+</div></R><div style={{height:8}}/></section>)}
 
 /* ─── LIFESTYLE ─── */
 function LifestyleGallery(){const scenes=[{img:"/lifestyle-picnic.png",label:"Golden Hour"},{img:"/lifestyle-club.png",label:"After Dark"},{img:"/lifestyle-festival.png",label:"Festival Season"},{img:"/lifestyle-gym.png",label:"Performance"},{img:"/lifestyle-beachgroup.png",label:"Coastline"},{img:"/luxury-yacht.png",label:"On Deck"}];return(
