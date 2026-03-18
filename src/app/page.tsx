@@ -59,7 +59,7 @@ function VideoIntroHero(){
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",opacity:phase>=2?0:1,transition:"opacity 0.5s ease"}}>
           <div style={{textAlign:"center"}}>
             <div style={{width:2,height:phase>=1?40:0,background:`linear-gradient(180deg,transparent,${C.gold})`,margin:"0 auto 20px",transition:"height 1s cubic-bezier(0.16,1,0.3,1)",borderRadius:1}}/>
-            <img src="/infinity-logo.png" alt="Infinity Water" style={{height:"clamp(48px,8vw,90px)",width:"auto",objectFit:"contain",opacity:phase>=1?0:1,transition:"opacity 0.5s ease 0.4s"}} />
+            <img src="/infinity-logo.png" alt="Infinity Water" style={{height:"clamp(100px,20vw,200px)",width:"auto",objectFit:"contain",opacity:phase>=1?0:1,transition:"opacity 0.5s ease 0.4s"}} />
           </div>
         </div>
       </div>
@@ -146,8 +146,8 @@ function Collections(){const cols=[
 {name:"Black Collection",type:"ALKALINE",img:"/black-trio.png",accent:C.frost,desc:"Silver, gunmetal, obsidian. pH-balanced alkaline water for peak performance."},
 ];return(
 <section id="collections" style={{background:C.void,position:"relative",overflow:"hidden"}}>
-<div style={{padding:"120px 8vw 48px"}}>
-<R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:52,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Three Collections · Three Waters</div></R>
+<div style={{padding:"80px 8vw 48px"}}>
+<R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Three Collections · Three Waters</div></R>
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice,margin:"0 0 72px"}}>Every color.<br/><em style={{color:C.gold}}>A purpose.</em></h2></R>
 </div>
 <div className="collections-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:2,padding:"0 2px"}}>
@@ -199,7 +199,7 @@ function BelgianOrigin(){return(
 /* ─── FULL LINEUP ─── */
 function FullLineup(){return(
 <section style={{background:C.ice,position:"relative",overflow:"hidden"}}>
-<div style={{padding:"120px 8vw 44px"}}><R><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(52px,9vw,140px)",fontWeight:300,fontStyle:"italic",lineHeight:0.88,letterSpacing:"-0.045em",color:C.deep,margin:0}}>The Full<br/>Collection.</h2></R></div>
+<div style={{padding:"80px 8vw 44px"}}><R><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(52px,9vw,140px)",fontWeight:300,fontStyle:"italic",lineHeight:0.88,letterSpacing:"-0.045em",color:C.deep,margin:0}}>The Full<br/>Collection.</h2></R></div>
 <R delay={0.15}><div style={{position:"relative",width:"100%",height:"clamp(450px,60vh,850px)",WebkitMaskImage:"linear-gradient(to bottom, black 0%, black 80%, transparent 100%), linear-gradient(to right, transparent 1%, black 6%, black 94%, transparent 99%)",maskImage:"linear-gradient(to bottom, black 0%, black 80%, transparent 100%), linear-gradient(to right, transparent 1%, black 6%, black 94%, transparent 99%)",WebkitMaskComposite:"intersect" as unknown as string,maskComposite:"intersect"}}>
 <Image src="/v-formation.png" alt="All bottles V formation" fill style={{objectFit:"contain",objectPosition:"center"}}/>
 </div></R></section>)}
@@ -207,18 +207,18 @@ function FullLineup(){return(
 /* ─── SPIRAL GRID ─── */
 function SpiralGrid(){return(
 <section style={{background:C.void,position:"relative",overflow:"hidden"}}>
-<div style={{padding:"108px 8vw 44px"}}>
-<R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Every Finish</div></R>
-<R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice}}>Nine metals.<br/><em style={{color:C.gold}}>One spiral.</em></h2></R>
+<div style={{padding:"80px 8vw 32px"}}>
+<R><div style={{fontFamily:"'DM Mono',monospace",fontSize:11,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Every Finish</div></R>
+<R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice}}>Nine finishes.<br/><em style={{color:C.gold}}>Infinite elegance.</em></h2></R>
 </div>
-<R delay={0.2}><div style={{position:"relative",width:"100%",height:"clamp(400px,60vh,800px)",WebkitMaskImage:"radial-gradient(ellipse 85% 80% at 50% 48%, black 50%, transparent 100%)",maskImage:"radial-gradient(ellipse 85% 80% at 50% 48%, black 50%, transparent 100%)"}}>
+<R delay={0.2}><div style={{position:"relative",width:"100%",height:"clamp(500px,75vh,1000px)"}}>
 <Image src="/spiral-grid.png" alt="All bottles with water spirals" fill style={{objectFit:"contain",objectPosition:"center"}}/>
-</div></R><div style={{height:64}}/></section>)}
+</div></R><div style={{height:32}}/></section>)}
 
 /* ─── LIFESTYLE ─── */
 function LifestyleGallery(){const scenes=[{img:"/lifestyle-picnic.png",label:"Golden Hour"},{img:"/lifestyle-club.png",label:"After Dark"},{img:"/lifestyle-festival.png",label:"Festival Season"},{img:"/lifestyle-gym.png",label:"Performance"},{img:"/lifestyle-beachgroup.png",label:"Coastline"},{img:"/luxury-yacht.png",label:"On Deck"}];return(
-<section id="lifestyle" style={{padding:"120px 8vw",background:C.void}}>
-<R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:52,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Lifestyle</div></R>
+<section id="lifestyle" style={{padding:"80px 8vw",background:C.void}}>
+<R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Lifestyle</div></R>
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice,margin:"0 0 72px"}}>Where Infinity<br/><em style={{color:C.gold}}>lives.</em></h2></R>
 <div className="lifestyle-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
 {scenes.map((s,i)=>(<R key={s.label} delay={0.06*i}>
@@ -233,9 +233,9 @@ onMouseLeave={e=>{const img=e.currentTarget.querySelector("img") as HTMLElement;
 /* ─── LUXURY CONTEXT ─── */
 function LuxuryContext(){return(
 <section style={{background:C.void,position:"relative",overflow:"hidden"}}>
-<div style={{padding:"120px 8vw 64px"}}>
+<div style={{padding:"80px 8vw 64px"}}>
 <R><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice,margin:"0 0 20px"}}>Everywhere<br/><em style={{color:C.gold}}>that matters.</em></h2></R>
-<R delay={0.1}><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:300,lineHeight:1.75,color:C.frost,opacity:0.45,maxWidth:420,marginBottom:52}}>Private aviation. Five-star suites. Yacht decks. The standard for premium hospitality worldwide.</p></R>
+<R delay={0.1}><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:300,lineHeight:1.75,color:C.frost,opacity:0.45,maxWidth:420,marginBottom:36}}>Private aviation. Five-star suites. Yacht decks. The standard for premium hospitality worldwide.</p></R>
 </div>
 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:3}}>
 {[{img:"/luxury-hotel.png",label:"Five-Star Suites"},{img:"/luxury-jet.png",label:"Private Aviation"},{img:"/luxury-jetbucket.png",label:"First Class"}].map((s,i)=>(<R key={s.label} delay={0.08*i}>
@@ -248,7 +248,7 @@ function LuxuryContext(){return(
 /* ─── STUDIO ─── */
 function GalleryStudio(){return(
 <section style={{position:"relative",background:C.ice,overflow:"hidden"}}>
-<div style={{padding:"108px 8vw 44px"}}>
+<div style={{padding:"72px 8vw 44px"}}>
 <R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.water,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.water,display:"inline-block"}}/>Studio</div></R>
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(40px,6vw,72px)",fontWeight:300,lineHeight:1.02,color:C.deep}}>Designed to be<br/><em>displayed.</em></h2></R>
 </div>
