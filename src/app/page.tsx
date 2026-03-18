@@ -8,7 +8,6 @@ const C = {
   faint: "#1A2530", gold: "#C5A55A"
 };
 
-/* ─── Hooks ─── */
 function useInView(t = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
   const [v, setV] = useState(false);
@@ -41,7 +40,6 @@ function R({ children, delay = 0, dir = "up", style = {} }: {
   );
 }
 
-/* ─── Ambient layers ─── */
 const Grain = () => (
   <div style={{ position: "fixed", inset: 0, zIndex: 9999, pointerEvents: "none", mixBlendMode: "overlay", opacity: 0.03 }}>
     <svg width="100%" height="100%">
@@ -102,7 +100,6 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-/* ─── NAV ─── */
 function Nav() {
   const [s, setS] = useState(false);
   useEffect(() => {
@@ -125,8 +122,8 @@ function Nav() {
         color: s ? C.deep : C.ice, textDecoration: "none", transition: "color 0.5s ease"
       }}>Infinity</a>
       <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
-        {["Collections", "Lifestyle", "Partners"].map(i => (
-          <a key={i} href="#" className="nav-link-hide" style={{
+        {["Collections", "Origin", "Lifestyle"].map(i => (
+          <a key={i} href={`#${i.toLowerCase()}`} className="nav-link-hide" style={{
             fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.2em",
             textTransform: "uppercase", color: s ? C.deep : C.frost,
             textDecoration: "none", opacity: 0.6, transition: "all 0.3s ease"
@@ -146,7 +143,6 @@ function Nav() {
   );
 }
 
-/* ─── HERO ─── */
 function Hero() {
   const [ready, setReady] = useState(false);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
@@ -157,13 +153,9 @@ function Hero() {
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
-
   return (
-    <section
-      onMouseMove={e => setMouse({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })}
-      style={{ height: "100vh", position: "relative", overflow: "hidden", background: C.void, cursor: "crosshair" }}
-    >
-      {/* Hero video — vignette masked to dissolve edges */}
+    <section onMouseMove={e => setMouse({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })}
+      style={{ height: "100vh", position: "relative", overflow: "hidden", background: C.void, cursor: "crosshair" }}>
       <div style={{
         position: "absolute", inset: "-5%", width: "110%", height: "110%",
         WebkitMaskImage: "radial-gradient(ellipse 72% 68% at 50% 50%, black 35%, transparent 100%)",
@@ -174,88 +166,36 @@ function Hero() {
           opacity: ready ? 0.55 : 0, filter: "brightness(0.5) contrast(1.15) saturate(0.7)",
           transition: "opacity 2.5s cubic-bezier(0.16,1,0.3,1)",
           transform: `scale(${1.05 + scrollY * 0.0002}) translate(${(mouse.x - 0.5) * -12}px,${(mouse.y - 0.5) * -12}px)`
-        }}>
-          <source src="/hero.mp4" type="video/mp4" />
-        </video>
+        }}><source src="/hero.mp4" type="video/mp4" /></video>
       </div>
-
-      {/* Mouse-following gold glow */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: `radial-gradient(ellipse at ${mouse.x * 100}% ${mouse.y * 100}%,${C.gold}08 0%,transparent 50%)`,
-        zIndex: 1, transition: "background 1.5s ease"
-      }} />
-
-      {/* Horizontal accent line */}
-      <div style={{
-        position: "absolute", top: "50%", left: "8vw", right: "8vw", height: 1,
-        background: `linear-gradient(90deg,transparent,${C.gold}18,transparent)`,
-        zIndex: 2, opacity: ready ? 1 : 0, transition: "opacity 2s ease 1s"
-      }} />
-
-      {/* Hero text */}
+      <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at ${mouse.x * 100}% ${mouse.y * 100}%,${C.gold}08 0%,transparent 50%)`, zIndex: 1 }} />
+      <div style={{ position: "absolute", top: "50%", left: "8vw", right: "8vw", height: 1, background: `linear-gradient(90deg,transparent,${C.gold}18,transparent)`, zIndex: 2, opacity: ready ? 1 : 0, transition: "opacity 2s ease 1s" }} />
       <div style={{ position: "absolute", bottom: "16vh", left: "8vw", zIndex: 3, maxWidth: "70vw" }}>
-        <div style={{
-          fontFamily: "'DM Mono',monospace", fontSize: "clamp(9px,0.8vw,11px)",
-          letterSpacing: "0.5em", textTransform: "uppercase", color: C.gold, marginBottom: 24,
-          opacity: ready ? 1 : 0, transform: ready ? "translateX(0)" : "translateX(-30px)",
-          transition: "all 1.2s cubic-bezier(0.16,1,0.3,1) 0.2s",
-          display: "flex", alignItems: "center", gap: 12
-        }}>
+        <div style={{ fontFamily: "'DM Mono',monospace", fontSize: "clamp(9px,0.8vw,11px)", letterSpacing: "0.5em", textTransform: "uppercase", color: C.gold, marginBottom: 24, opacity: ready ? 1 : 0, transform: ready ? "translateX(0)" : "translateX(-30px)", transition: "all 1.2s cubic-bezier(0.16,1,0.3,1) 0.2s", display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ width: 32, height: 1, background: C.gold, display: "inline-block" }} />
-          Premium Hydration — 9 Collections
+          Premium Hydration — Born in Belgium
         </div>
-        <h1 style={{
-          fontFamily: "'Cormorant',serif", fontSize: "clamp(56px,14vw,200px)",
-          fontWeight: 300, lineHeight: 0.85, letterSpacing: "-0.04em", color: C.ice, margin: 0
-        }}>
-          <span style={{
-            display: "block", opacity: ready ? 1 : 0,
-            transform: ready ? "translateY(0)" : "translateY(100%)",
-            transition: "all 1.4s cubic-bezier(0.16,1,0.3,1) 0.4s"
-          }}>Infinity</span>
-          <span style={{
-            display: "block", fontStyle: "italic", color: C.gold,
-            opacity: ready ? 1 : 0, transform: ready ? "translateY(0)" : "translateY(100%)",
-            transition: "all 1.4s cubic-bezier(0.16,1,0.3,1) 0.55s",
-            textShadow: `0 0 80px ${C.gold}15`
-          }}>Water</span>
+        <h1 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(56px,14vw,200px)", fontWeight: 300, lineHeight: 0.85, letterSpacing: "-0.04em", color: C.ice, margin: 0 }}>
+          <span style={{ display: "block", opacity: ready ? 1 : 0, transform: ready ? "translateY(0)" : "translateY(100%)", transition: "all 1.4s cubic-bezier(0.16,1,0.3,1) 0.4s" }}>Infinity</span>
+          <span style={{ display: "block", fontStyle: "italic", color: C.gold, opacity: ready ? 1 : 0, transform: ready ? "translateY(0)" : "translateY(100%)", transition: "all 1.4s cubic-bezier(0.16,1,0.3,1) 0.55s", textShadow: `0 0 80px ${C.gold}15` }}>Water</span>
         </h1>
-        <div style={{
-          marginTop: 40, marginLeft: "clamp(80px,12vw,200px)",
-          opacity: ready ? 1 : 0, transform: ready ? "translateY(0)" : "translateY(30px)",
-          transition: "all 1s cubic-bezier(0.16,1,0.3,1) 0.9s"
-        }}>
-          <p style={{
-            fontFamily: "'DM Sans',sans-serif", fontSize: "clamp(13px,1.1vw,16px)",
-            fontWeight: 300, color: C.frost, lineHeight: 1.6, maxWidth: 340
-          }}>Sculpted for those who demand more. Nine metallic collections. One infinite standard.</p>
+        <div style={{ marginTop: 40, marginLeft: "clamp(80px,12vw,200px)", opacity: ready ? 1 : 0, transform: ready ? "translateY(0)" : "translateY(30px)", transition: "all 1s cubic-bezier(0.16,1,0.3,1) 0.9s" }}>
+          <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "clamp(13px,1.1vw,16px)", fontWeight: 300, color: C.frost, lineHeight: 1.6, maxWidth: 340 }}>Sculpted in Belgium. Three collections. Nine metallic finishes. One infinite standard.</p>
         </div>
       </div>
     </section>
   );
 }
 
-/* ─── HERO PRODUCT — spiral image edge-blended ─── */
 function HeroProduct() {
   return (
     <section style={{ position: "relative", overflow: "hidden", background: C.ice }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "90vh" }}>
         <div style={{ display: "flex", alignItems: "center", padding: "100px 6vw 100px 8vw" }}>
           <div>
-            <R><div style={{
-              fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em",
-              textTransform: "uppercase", color: C.water, marginBottom: 40,
-              display: "flex", alignItems: "center", gap: 12
-            }}><span style={{ width: 40, height: 1, background: C.water, display: "inline-block" }} />The Vessel</div></R>
-            <R delay={0.12}><h2 style={{
-              fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,5.5vw,80px)",
-              fontWeight: 300, lineHeight: 1, letterSpacing: "-0.03em", color: C.deep, margin: "0 0 32px"
-            }}>Not a bottle.<br /><em style={{ color: C.gold }}>A sculpture.</em></h2></R>
-            <R delay={0.25}><p style={{
-              fontFamily: "'DM Sans',sans-serif", fontSize: "clamp(14px,1.2vw,17px)",
-              fontWeight: 300, lineHeight: 1.8, color: C.deep, opacity: 0.55, maxWidth: 400
-            }}>Brushed metallic finish. Wine-bottle silhouette. Every color a statement. Precision-engineered to preserve purity and elevate the act of drinking.</p></R>
+            <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em", textTransform: "uppercase", color: C.water, marginBottom: 40, display: "flex", alignItems: "center", gap: 12 }}><span style={{ width: 40, height: 1, background: C.water, display: "inline-block" }} />The Vessel</div></R>
+            <R delay={0.12}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,5.5vw,80px)", fontWeight: 300, lineHeight: 1, letterSpacing: "-0.03em", color: C.deep, margin: "0 0 32px" }}>Not a bottle.<br /><em style={{ color: C.gold }}>A sculpture.</em></h2></R>
+            <R delay={0.25}><p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "clamp(14px,1.2vw,17px)", fontWeight: 300, lineHeight: 1.8, color: C.deep, opacity: 0.55, maxWidth: 400 }}>Brushed metallic finish. Wine-bottle silhouette. Every color a statement. Precision-engineered to preserve purity and elevate the act of drinking.</p></R>
             <R delay={0.35}><div style={{ marginTop: 48, display: "flex", gap: 32 }}>
               {[{ n: "9", l: "Colors" }, { n: "750", l: "ml" }, { n: "∞", l: "Standard" }].map(s => (
                 <div key={s.l} style={{ borderLeft: `1px solid ${C.mist}`, paddingLeft: 16 }}>
@@ -266,16 +206,9 @@ function HeroProduct() {
             </div></R>
           </div>
         </div>
-        {/* Spiral image — edge-dissolved into light background */}
         <R delay={0.1} dir="left" style={{ position: "relative", minHeight: 500 }}>
-          <div style={{
-            position: "absolute", inset: 0,
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 15%, black 100%), linear-gradient(to bottom, black 0%, black 85%, transparent 100%)",
-            maskImage: "linear-gradient(to right, transparent 0%, black 15%, black 100%), linear-gradient(to bottom, black 0%, black 85%, transparent 100%)",
-            WebkitMaskComposite: "intersect" as unknown as string,
-            maskComposite: "intersect",
-          }}>
-            <Image src="/hero-spiral.png" alt="Infinity Water Gold bottle with water spiral" fill style={{ objectFit: "cover", objectPosition: "center" }} priority />
+          <div style={{ position: "absolute", inset: 0, WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 15%, black 100%), linear-gradient(to bottom, black 0%, black 85%, transparent 100%)", maskImage: "linear-gradient(to right, transparent 0%, black 15%, black 100%), linear-gradient(to bottom, black 0%, black 85%, transparent 100%)", WebkitMaskComposite: "intersect" as unknown as string, maskComposite: "intersect" }}>
+            <Image src="/gold-splash.png" alt="Infinity Water Gold bottle with water splash" fill style={{ objectFit: "cover", objectPosition: "center" }} priority />
           </div>
         </R>
       </div>
@@ -283,134 +216,42 @@ function HeroProduct() {
   );
 }
 
-/* ─── COLLECTIONS — product images blended ─── */
 function Collections() {
-  const [active, setActive] = useState(0);
   const cols = [
-    { name: "Gold Collection", sub: "Champagne · Bronze · 24K", img: "/gold-collection.jpg", desc: "The original. Brushed gold, champagne shimmer, and deep bronze. For those who set the standard." },
-    { name: "Blue Collection", sub: "Aqua · Navy · Cobalt", img: "/blue-collection.jpg", desc: "Ocean depth meets precision engineering. Three blues that command attention." },
-    { name: "Black Collection", sub: "Silver · Gunmetal · Obsidian", img: "/black-collection.png", desc: "The understated power move. Polished silver to matte obsidian. Elegance without explanation." },
+    { name: "Gold Collection", type: "SPARKLING", img: "/gold-trio.png", accent: C.gold, desc: "The original. Champagne shimmer, brushed bronze, and deep 24K. Effervescent purity — carbonated at the source." },
+    { name: "Blue Collection", type: "SPRING", img: "/blue-trio.png", accent: C.water, desc: "Ocean depth meets precision engineering. Aqua, navy, and cobalt. Still water drawn from protected Belgian springs." },
+    { name: "Black Collection", type: "ALKALINE", img: "/black-trio.png", accent: C.frost, desc: "The understated power move. Silver, gunmetal, obsidian. pH-balanced alkaline water for peak performance." },
   ];
-  const c = cols[active];
-
   return (
-    <section style={{ background: C.void, position: "relative", overflow: "hidden" }}>
-      <div style={{ padding: "120px 8vw 0" }}>
-        <R><div style={{
-          fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em",
-          textTransform: "uppercase", color: C.gold, marginBottom: 48,
-          display: "flex", alignItems: "center", gap: 12
-        }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Three Collections</div></R>
-        <R delay={0.1}><div style={{ display: "flex", gap: 0, marginBottom: 48 }}>
-          {cols.map((col, i) => (
-            <button key={col.name} onClick={() => setActive(i)} style={{
-              fontFamily: "'Cormorant',serif", fontSize: "clamp(24px,2.5vw,40px)",
-              fontWeight: active === i ? 400 : 300, color: active === i ? C.ice : C.frost,
-              opacity: active === i ? 1 : 0.25, background: "none", border: "none",
-              cursor: "pointer", padding: "12px 28px 12px 0",
-              transition: "all 0.5s cubic-bezier(0.16,1,0.3,1)",
-              borderBottom: active === i ? `1px solid ${C.gold}` : "1px solid transparent",
-              letterSpacing: "-0.02em"
-            }}>{col.name}</button>
-          ))}
-        </div></R>
-        <R delay={0.15}><p style={{
-          fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 300,
-          lineHeight: 1.7, color: C.frost, opacity: 0.5, maxWidth: 420, marginBottom: 24
-        }}>{c.desc}</p></R>
-        <R delay={0.2}><div style={{
-          fontFamily: "'DM Mono',monospace", fontSize: 10, letterSpacing: "0.2em",
-          textTransform: "uppercase", color: C.gold, marginBottom: 8
-        }}>{c.sub}</div></R>
+    <section id="collections" style={{ background: C.void, position: "relative", overflow: "hidden" }}>
+      <div style={{ padding: "120px 8vw 40px" }}>
+        <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em", textTransform: "uppercase", color: C.gold, marginBottom: 48, display: "flex", alignItems: "center", gap: 12 }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Three Collections · Three Waters</div></R>
+        <R delay={0.1}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,6vw,80px)", fontWeight: 300, lineHeight: 0.95, color: C.ice, margin: "0 0 64px" }}>Every color.<br /><em style={{ color: C.gold }}>A purpose.</em></h2></R>
       </div>
-      {/* Collection image — edge-dissolved, no hard rectangle */}
-      <R delay={0.1}>
-        <div style={{
-          position: "relative", width: "100%", height: "clamp(400px,50vh,700px)", marginTop: 32,
-          WebkitMaskImage: "radial-gradient(ellipse 80% 75% at 50% 48%, black 45%, transparent 100%)",
-          maskImage: "radial-gradient(ellipse 80% 75% at 50% 48%, black 45%, transparent 100%)",
-        }}>
-          <Image src={c.img} alt={c.name} fill style={{ objectFit: "contain", objectPosition: "center", transition: "opacity 0.5s ease" }} />
-        </div>
-      </R>
-      <div style={{ padding: "40px 8vw 100px", textAlign: "center" }}>
-        <R delay={0.25}>
-          <a href="#order" style={{
-            display: "inline-block", fontFamily: "'DM Mono',monospace", fontSize: 10,
-            letterSpacing: "0.25em", textTransform: "uppercase",
-            color: C.void, background: C.gold, padding: "14px 40px",
-            textDecoration: "none", transition: "all 0.4s ease"
-          }}
-            onMouseEnter={e => { (e.target as HTMLElement).style.background = C.ice; }}
-            onMouseLeave={e => { (e.target as HTMLElement).style.background = C.gold; }}
-          >Shop Collection</a>
-        </R>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2, padding: "0 2px" }}>
+        {cols.map((col, i) => (
+          <R key={col.name} delay={0.1 * i}>
+            <div style={{ position: "relative", background: C.faint, overflow: "hidden", padding: "48px 32px 0" }}>
+              <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 8, letterSpacing: "0.5em", textTransform: "uppercase", color: col.accent, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 20, height: 1, background: col.accent, display: "inline-block" }} />{col.type}
+              </div>
+              <h3 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(24px,2.5vw,36px)", fontWeight: 300, color: C.ice, marginBottom: 12, letterSpacing: "-0.02em" }}>{col.name}</h3>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 300, lineHeight: 1.7, color: C.frost, opacity: 0.5, marginBottom: 32 }}>{col.desc}</p>
+              <div style={{ position: "relative", width: "100%", aspectRatio: "4/3", WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)", maskImage: "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)" }}>
+                <Image src={col.img} alt={col.name} fill style={{ objectFit: "contain", objectPosition: "center bottom" }} />
+              </div>
+            </div>
+          </R>
+        ))}
       </div>
-    </section>
-  );
-}
-
-/* ─── CINEMATIC SECTION — video edge-dissolved ─── */
-function CinematicSection() {
-  const [ref, vis] = useInView(0.3);
-  return (
-    <section ref={ref} style={{ position: "relative", height: "80vh", overflow: "hidden", background: C.void }}>
-      {/* Video with vignette mask */}
-      <div style={{
-        position: "absolute", inset: "-5%", width: "110%", height: "110%",
-        WebkitMaskImage: "radial-gradient(ellipse 70% 65% at 50% 50%, black 35%, transparent 100%)",
-        maskImage: "radial-gradient(ellipse 70% 65% at 50% 50%, black 35%, transparent 100%)",
-      }}>
-        <video autoPlay muted loop playsInline style={{
-          width: "100%", height: "100%", objectFit: "cover",
-          opacity: vis ? 0.75 : 0, filter: "brightness(0.65) contrast(1.1) saturate(0.85)",
-          transition: "opacity 2s cubic-bezier(0.16,1,0.3,1)"
-        }}>
-          <source src="/commercial.mp4" type="video/mp4" />
-        </video>
-      </div>
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
-        <div style={{ textAlign: "center" }}>
-          <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.5em", textTransform: "uppercase", color: C.gold, marginBottom: 24 }}>The Ritual</div></R>
-          <R delay={0.15}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,7vw,100px)", fontWeight: 300, fontStyle: "italic", lineHeight: 0.9, letterSpacing: "-0.03em", color: C.ice, margin: 0 }}>Water, elevated<br />to an art form.</h2></R>
-          <R delay={0.3}><p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 300, color: C.frost, opacity: 0.5, marginTop: 24, maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}>Every pour is intentional. Every sip, a statement.</p></R>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── FULL LINEUP — edge-blended on light bg ─── */
-function FullLineup() {
-  return (
-    <section style={{ position: "relative", background: C.ice, overflow: "hidden" }}>
-      <div style={{ padding: "100px 8vw 40px" }}>
-        <R><h2 style={{
-          fontFamily: "'Cormorant',serif", fontSize: "clamp(48px,8vw,120px)",
-          fontWeight: 300, fontStyle: "italic", lineHeight: 0.9,
-          letterSpacing: "-0.04em", color: C.deep, margin: 0
-        }}>The Full<br />Collection.</h2></R>
-      </div>
-      {/* All bottles — soft edge fade */}
-      <R delay={0.15}>
-        <div style={{
-          position: "relative", width: "100%", height: "clamp(350px,45vh,600px)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)",
-          maskImage: "linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)",
-          WebkitMaskComposite: "intersect" as unknown as string,
-          maskComposite: "intersect",
-        }}>
-          <Image src="/all-bottles.png" alt="All Infinity Water bottles" fill style={{ objectFit: "contain", objectPosition: "center" }} />
-        </div>
-      </R>
-      <div style={{ padding: "40px 8vw 100px", display: "flex", justifyContent: "center", gap: 48, flexWrap: "wrap" }}>
-        {["Silver", "Aqua", "Navy", "Gold", "Bronze", "Cobalt", "Gunmetal", "Obsidian", "24K"].map((color, i) => (
-          <R key={color} delay={0.05 * i}>
-            <span style={{
-              fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.2em",
-              textTransform: "uppercase", color: C.frost, padding: "8px 0",
-              borderBottom: `1px solid ${C.mist}40`
-            }}>{color}</span>
+      <div style={{ padding: "48px 8vw 100px", display: "flex", justifyContent: "center", gap: 0, flexWrap: "wrap" }}>
+        {[
+          { color: "24K Gold", accent: C.gold }, { color: "Champagne", accent: C.gold }, { color: "Bronze", accent: C.gold },
+          { color: "Aqua", accent: C.water }, { color: "Navy", accent: C.water }, { color: "Cobalt", accent: C.water },
+          { color: "Silver", accent: C.frost }, { color: "Gunmetal", accent: C.frost }, { color: "Obsidian", accent: C.frost },
+        ].map((c, i) => (
+          <R key={c.color} delay={0.04 * i}>
+            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", color: c.accent, padding: "8px 16px", opacity: 0.6 }}>{c.color}</span>
           </R>
         ))}
       </div>
@@ -418,63 +259,105 @@ function FullLineup() {
   );
 }
 
-/* ─── LIFESTYLE GALLERY — vignette-masked images ─── */
+function CinematicSection() {
+  return (
+    <section style={{ position: "relative", height: "80vh", overflow: "hidden", background: C.void, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "absolute", inset: 0, WebkitMaskImage: "radial-gradient(ellipse 70% 65% at 50% 50%, black 35%, transparent 100%)", maskImage: "radial-gradient(ellipse 70% 65% at 50% 50%, black 35%, transparent 100%)" }}>
+        <Image src="/gold-float.png" alt="Gold Infinity Water bottle floating" fill style={{ objectFit: "contain", objectPosition: "center" }} />
+      </div>
+      <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 50%, transparent 30%, ${C.void} 70%)` }} />
+    </section>
+  );
+}
+
+function BelgianOrigin() {
+  return (
+    <section id="origin" style={{ background: C.void, position: "relative", overflow: "hidden" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "80vh" }}>
+        <R style={{ position: "relative", minHeight: 500 }}>
+          <div style={{ position: "absolute", inset: 0, WebkitMaskImage: "radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)", maskImage: "radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)" }}>
+            <Image src="/gold-ice.png" alt="Gold Infinity Water bottle encased in ice crystals" fill style={{ objectFit: "cover", objectPosition: "center" }} />
+          </div>
+        </R>
+        <div style={{ display: "flex", alignItems: "center", padding: "100px 8vw 100px 4vw" }}>
+          <div>
+            <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em", textTransform: "uppercase", color: C.gold, marginBottom: 40, display: "flex", alignItems: "center", gap: 12 }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Origin</div></R>
+            <R delay={0.12}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(36px,4.5vw,64px)", fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em", color: C.ice, margin: "0 0 32px" }}>Born in<br /><em style={{ color: C.gold }}>Belgium.</em></h2></R>
+            <R delay={0.25}><p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "clamp(14px,1.2vw,17px)", fontWeight: 300, lineHeight: 1.85, color: C.frost, opacity: 0.55, maxWidth: 420, marginBottom: 40 }}>Sourced from protected aquifers deep beneath the Ardennes. Filtered through millennia of Devonian limestone. Bottled at origin — never transported in bulk, never treated, never compromised.</p></R>
+            <R delay={0.35}><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+              {[
+                { label: "Source", value: "Ardennes Aquifer" },
+                { label: "Filtration", value: "Natural Limestone" },
+                { label: "Bottled", value: "At Origin" },
+                { label: "Three Waters", value: "Sparkling · Spring · Alkaline" },
+              ].map(item => (
+                <div key={item.label} style={{ background: C.faint, padding: "20px 16px" }}>
+                  <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 8, letterSpacing: "0.35em", textTransform: "uppercase", color: C.gold, marginBottom: 8 }}>{item.label}</div>
+                  <div style={{ fontFamily: "'Cormorant',serif", fontSize: 16, fontWeight: 400, color: C.ice, lineHeight: 1.4 }}>{item.value}</div>
+                </div>
+              ))}
+            </div></R>
+            <R delay={0.45}><div style={{ marginTop: 40 }}>
+              <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: C.frost, opacity: 0.3 }}>Belgium · Est. 2024 · A Kollective Hospitality Group Brand</div>
+            </div></R>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FullLineup() {
+  return (
+    <section style={{ background: C.ice, position: "relative", overflow: "hidden" }}>
+      <div style={{ padding: "120px 8vw 40px" }}>
+        <R><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(48px,8vw,120px)", fontWeight: 300, fontStyle: "italic", lineHeight: 0.9, letterSpacing: "-0.04em", color: C.deep, margin: 0 }}>The Full<br />Collection.</h2></R>
+      </div>
+      <R delay={0.15}>
+        <div style={{ position: "relative", width: "100%", height: "clamp(350px,45vh,600px)", WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)", maskImage: "linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)", WebkitMaskComposite: "intersect" as unknown as string, maskComposite: "intersect" }}>
+          <Image src="/v-formation.png" alt="All Infinity Water bottles in V formation" fill style={{ objectFit: "contain", objectPosition: "center" }} />
+        </div>
+      </R>
+    </section>
+  );
+}
+
+function SpiralGrid() {
+  return (
+    <section style={{ background: C.void, position: "relative", overflow: "hidden" }}>
+      <div style={{ padding: "100px 8vw 40px" }}>
+        <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em", textTransform: "uppercase", color: C.gold, marginBottom: 32, display: "flex", alignItems: "center", gap: 12 }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Every Finish</div></R>
+        <R delay={0.1}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,6vw,80px)", fontWeight: 300, lineHeight: 0.95, color: C.ice, margin: "0 0 16px" }}>Nine metals.<br /><em style={{ color: C.gold }}>One spiral.</em></h2></R>
+      </div>
+      <R delay={0.2}>
+        <div style={{ position: "relative", width: "100%", height: "clamp(400px,60vh,800px)", WebkitMaskImage: "radial-gradient(ellipse 85% 80% at 50% 48%, black 50%, transparent 100%)", maskImage: "radial-gradient(ellipse 85% 80% at 50% 48%, black 50%, transparent 100%)" }}>
+          <Image src="/spiral-grid.png" alt="All Infinity Water bottles with water spirals" fill style={{ objectFit: "contain", objectPosition: "center" }} />
+        </div>
+      </R>
+      <div style={{ height: 60 }} />
+    </section>
+  );
+}
+
 function LifestyleGallery() {
   const scenes = [
-    { img: "/lifestyle-picnic.png", label: "Golden Hour" },
-    { img: "/lifestyle-club.png", label: "After Dark" },
-    { img: "/lifestyle-festival.png", label: "Festival Season" },
-    { img: "/lifestyle-gym.png", label: "Performance" },
-    { img: "/lifestyle-beachgroup.png", label: "Coastline" },
-    { img: "/luxury-yacht.png", label: "On Deck" },
+    { img: "/lifestyle-picnic.png", label: "Golden Hour" }, { img: "/lifestyle-club.png", label: "After Dark" },
+    { img: "/lifestyle-festival.png", label: "Festival Season" }, { img: "/lifestyle-gym.png", label: "Performance" },
+    { img: "/lifestyle-beachgroup.png", label: "Coastline" }, { img: "/luxury-yacht.png", label: "On Deck" },
   ];
   return (
-    <section style={{ padding: "120px 8vw", background: C.void }}>
-      <R><div style={{
-        fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em",
-        textTransform: "uppercase", color: C.gold, marginBottom: 48,
-        display: "flex", alignItems: "center", gap: 12
-      }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Lifestyle</div></R>
-      <R delay={0.1}><h2 style={{
-        fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,6vw,80px)",
-        fontWeight: 300, lineHeight: 0.95, color: C.ice, margin: "0 0 64px"
-      }}>Where Infinity<br /><em style={{ color: C.gold }}>lives.</em></h2></R>
+    <section id="lifestyle" style={{ padding: "120px 8vw", background: C.void }}>
+      <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em", textTransform: "uppercase", color: C.gold, marginBottom: 48, display: "flex", alignItems: "center", gap: 12 }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Lifestyle</div></R>
+      <R delay={0.1}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,6vw,80px)", fontWeight: 300, lineHeight: 0.95, color: C.ice, margin: "0 0 64px" }}>Where Infinity<br /><em style={{ color: C.gold }}>lives.</em></h2></R>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4 }}>
         {scenes.map((s, i) => (
           <R key={s.label} delay={0.06 * i}>
-            <div style={{
-              position: "relative", aspectRatio: i === 0 || i === 4 ? "4/5" : "3/4",
-              overflow: "hidden", cursor: "pointer",
-              /* Vignette mask — dissolves edges into dark void */
-              WebkitMaskImage: "radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",
-              maskImage: "radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",
-              transition: "all 0.6s cubic-bezier(0.16,1,0.3,1)",
-            }}
-              onMouseEnter={e => {
-                const img = e.currentTarget.querySelector("img") as HTMLElement;
-                if (img) img.style.transform = "scale(1.06)";
-                const st = e.currentTarget.style as unknown as Record<string, string>;
-                st.webkitMaskImage = "radial-gradient(ellipse 88% 82% at 50% 45%, black 55%, transparent 100%)";
-                st.maskImage = "radial-gradient(ellipse 88% 82% at 50% 45%, black 55%, transparent 100%)";
-              }}
-              onMouseLeave={e => {
-                const img = e.currentTarget.querySelector("img") as HTMLElement;
-                if (img) img.style.transform = "scale(1)";
-                const st = e.currentTarget.style as unknown as Record<string, string>;
-                st.webkitMaskImage = "radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)";
-                st.maskImage = "radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)";
-              }}
-            >
+            <div style={{ position: "relative", aspectRatio: i === 0 || i === 4 ? "4/5" : "3/4", overflow: "hidden", cursor: "pointer", WebkitMaskImage: "radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)", maskImage: "radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)", transition: "all 0.6s cubic-bezier(0.16,1,0.3,1)" }}
+              onMouseEnter={e => { const img = e.currentTarget.querySelector("img") as HTMLElement; if (img) img.style.transform = "scale(1.06)"; }}
+              onMouseLeave={e => { const img = e.currentTarget.querySelector("img") as HTMLElement; if (img) img.style.transform = "scale(1)"; }}>
               <Image src={s.img} alt={s.label} fill style={{ objectFit: "cover", transition: "transform 0.8s cubic-bezier(0.16,1,0.3,1)" }} />
-              <div style={{
-                position: "absolute", bottom: 0, left: 0, right: 0,
-                padding: "40px 20px 16px",
-                background: "linear-gradient(transparent,rgba(0,0,0,0.5))"
-              }}>
-                <span style={{
-                  fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.25em",
-                  textTransform: "uppercase", color: C.ice, opacity: 0.8
-                }}>{s.label}</span>
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "40px 20px 16px", background: "linear-gradient(transparent,rgba(0,0,0,0.5))" }}>
+                <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.25em", textTransform: "uppercase", color: C.ice, opacity: 0.8 }}>{s.label}</span>
               </div>
             </div>
           </R>
@@ -484,78 +367,37 @@ function LifestyleGallery() {
   );
 }
 
-/* ─── ANIMATION BREAK — video edge-dissolved ─── */
 function AnimationBreak() {
   const [ref, vis] = useInView(0.3);
   return (
     <section ref={ref} style={{ position: "relative", height: "70vh", overflow: "hidden", background: C.void }}>
-      <div style={{
-        position: "absolute", inset: "-5%", width: "110%", height: "110%",
-        WebkitMaskImage: "radial-gradient(ellipse 68% 62% at 50% 50%, black 30%, transparent 100%)",
-        maskImage: "radial-gradient(ellipse 68% 62% at 50% 50%, black 30%, transparent 100%)",
-      }}>
-        <video autoPlay muted loop playsInline style={{
-          width: "100%", height: "100%", objectFit: "cover",
-          opacity: vis ? 0.6 : 0, filter: "brightness(0.5) contrast(1.2) saturate(0.75)",
-          transition: "opacity 2s cubic-bezier(0.16,1,0.3,1)"
-        }}>
-          <source src="/animation.mp4" type="video/mp4" />
-        </video>
+      <div style={{ position: "absolute", inset: "-5%", width: "110%", height: "110%", WebkitMaskImage: "radial-gradient(ellipse 68% 62% at 50% 50%, black 30%, transparent 100%)", maskImage: "radial-gradient(ellipse 68% 62% at 50% 50%, black 30%, transparent 100%)" }}>
+        <video autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "cover", opacity: vis ? 0.6 : 0, filter: "brightness(0.5) contrast(1.2) saturate(0.75)", transition: "opacity 2s cubic-bezier(0.16,1,0.3,1)" }}><source src="/animation.mp4" type="video/mp4" /></video>
       </div>
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", zIndex: 2, padding: "0 8vw" }}>
         <div>
-          <R><div style={{
-            fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em",
-            textTransform: "uppercase", color: C.gold, marginBottom: 32,
-            display: "flex", alignItems: "center", gap: 12
-          }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Premium Partners</div></R>
-          <R delay={0.12}><h2 style={{
-            fontFamily: "'Cormorant',serif", fontSize: "clamp(36px,5vw,72px)",
-            fontWeight: 300, lineHeight: 1, color: C.ice, margin: 0
-          }}>The world&apos;s finest<br />venues choose<br /><em style={{ color: C.gold }}>Infinity.</em></h2></R>
+          <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em", textTransform: "uppercase", color: C.gold, marginBottom: 32, display: "flex", alignItems: "center", gap: 12 }}><span style={{ width: 40, height: 1, background: C.gold, display: "inline-block" }} />Premium Partners</div></R>
+          <R delay={0.12}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(36px,5vw,72px)", fontWeight: 300, lineHeight: 1, color: C.ice, margin: 0 }}>The world&apos;s finest<br />venues choose<br /><em style={{ color: C.gold }}>Infinity.</em></h2></R>
         </div>
       </div>
     </section>
   );
 }
 
-/* ─── LUXURY CONTEXT — vignette-masked images ─── */
 function LuxuryContext() {
   return (
     <section style={{ background: C.void, position: "relative", overflow: "hidden" }}>
       <div style={{ padding: "120px 8vw 60px" }}>
-        <R><h2 style={{
-          fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,6vw,80px)",
-          fontWeight: 300, lineHeight: 0.95, color: C.ice, margin: "0 0 16px"
-        }}>Everywhere<br /><em style={{ color: C.gold }}>that matters.</em></h2></R>
-        <R delay={0.1}><p style={{
-          fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 300,
-          color: C.frost, opacity: 0.5, maxWidth: 400, marginBottom: 48
-        }}>Private aviation. Five-star suites. Yacht decks. Infinity Water is the standard for premium hospitality worldwide.</p></R>
+        <R><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(40px,6vw,80px)", fontWeight: 300, lineHeight: 0.95, color: C.ice, margin: "0 0 16px" }}>Everywhere<br /><em style={{ color: C.gold }}>that matters.</em></h2></R>
+        <R delay={0.1}><p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 300, lineHeight: 1.7, color: C.frost, opacity: 0.5, maxWidth: 400, marginBottom: 48 }}>Private aviation. Five-star suites. Yacht decks. Infinity Water is the standard for premium hospitality worldwide.</p></R>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 3 }}>
-        {[
-          { img: "/luxury-jet.png", label: "Private Aviation" },
-          { img: "/luxury-hotel.png", label: "Five-Star Suites" },
-          { img: "/luxury-jetbucket.png", label: "First Class" },
-        ].map((s, i) => (
+        {[{ img: "/luxury-jet.png", label: "Private Aviation" }, { img: "/luxury-hotel.png", label: "Five-Star Suites" }, { img: "/luxury-jetbucket.png", label: "First Class" }].map((s, i) => (
           <R key={s.label} delay={0.08 * i}>
-            <div style={{
-              position: "relative", aspectRatio: "4/3", overflow: "hidden",
-              /* Vignette dissolve into void */
-              WebkitMaskImage: "radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)",
-              maskImage: "radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)",
-            }}>
+            <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", WebkitMaskImage: "radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)", maskImage: "radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)" }}>
               <Image src={s.img} alt={s.label} fill style={{ objectFit: "cover" }} />
-              <div style={{
-                position: "absolute", bottom: 0, left: 0, right: 0,
-                padding: "48px 20px 16px",
-                background: "linear-gradient(transparent,rgba(0,0,0,0.5))"
-              }}>
-                <span style={{
-                  fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.25em",
-                  textTransform: "uppercase", color: C.ice, opacity: 0.8
-                }}>{s.label}</span>
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "48px 20px 16px", background: "linear-gradient(transparent,rgba(0,0,0,0.5))" }}>
+                <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.25em", textTransform: "uppercase", color: C.ice, opacity: 0.8 }}>{s.label}</span>
               </div>
             </div>
           </R>
@@ -565,31 +407,16 @@ function LuxuryContext() {
   );
 }
 
-/* ─── GALLERY STUDIO — edge-dissolved on light bg ─── */
 function GalleryStudio() {
   return (
     <section style={{ position: "relative", background: C.ice, overflow: "hidden" }}>
       <div style={{ padding: "100px 8vw 40px" }}>
-        <R><div style={{
-          fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em",
-          textTransform: "uppercase", color: C.water, marginBottom: 32,
-          display: "flex", alignItems: "center", gap: 12
-        }}><span style={{ width: 40, height: 1, background: C.water, display: "inline-block" }} />Studio</div></R>
-        <R delay={0.1}><h2 style={{
-          fontFamily: "'Cormorant',serif", fontSize: "clamp(36px,5vw,64px)",
-          fontWeight: 300, lineHeight: 1.05, color: C.deep
-        }}>Designed to be<br /><em>displayed.</em></h2></R>
+        <R><div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.4em", textTransform: "uppercase", color: C.water, marginBottom: 32, display: "flex", alignItems: "center", gap: 12 }}><span style={{ width: 40, height: 1, background: C.water, display: "inline-block" }} />Studio</div></R>
+        <R delay={0.1}><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(36px,5vw,64px)", fontWeight: 300, lineHeight: 1.05, color: C.deep }}>Designed to be<br /><em>displayed.</em></h2></R>
       </div>
-      {/* Studio shot — bottom edge dissolved */}
       <R delay={0.15}>
-        <div style={{
-          position: "relative", width: "100%", height: "clamp(350px,45vh,600px)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 70%, transparent 100%), linear-gradient(to right, transparent 3%, black 12%, black 88%, transparent 97%)",
-          maskImage: "linear-gradient(to bottom, black 0%, black 70%, transparent 100%), linear-gradient(to right, transparent 3%, black 12%, black 88%, transparent 97%)",
-          WebkitMaskComposite: "intersect" as unknown as string,
-          maskComposite: "intersect",
-        }}>
-          <Image src="/gallery-studio.png" alt="Infinity Water studio" fill style={{ objectFit: "contain" }} />
+        <div style={{ position: "relative", width: "100%", height: "clamp(350px,45vh,600px)", WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 70%, transparent 100%), linear-gradient(to right, transparent 3%, black 12%, black 88%, transparent 97%)", maskImage: "linear-gradient(to bottom, black 0%, black 70%, transparent 100%), linear-gradient(to right, transparent 3%, black 12%, black 88%, transparent 97%)", WebkitMaskComposite: "intersect" as unknown as string, maskComposite: "intersect" }}>
+          <Image src="/lineup-full.png" alt="Infinity Water full bottle lineup" fill style={{ objectFit: "contain" }} />
         </div>
       </R>
       <div style={{ height: 80 }} />
@@ -597,56 +424,27 @@ function GalleryStudio() {
   );
 }
 
-/* ─── CONVERSION ─── */
 function Conversion() {
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
   return (
-    <section id="order" style={{
-      minHeight: "80vh", background: C.void,
-      display: "flex", alignItems: "center", position: "relative", overflow: "hidden"
-    }}>
-      {/* Background image — vignette masked */}
-      <div style={{
-        position: "absolute", inset: 0, opacity: 0.08,
-        WebkitMaskImage: "radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)",
-        maskImage: "radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)",
-      }}>
-        <Image src="/hero-ice.png" alt="" fill style={{ objectFit: "cover" }} />
+    <section id="order" style={{ minHeight: "80vh", background: C.void, display: "flex", alignItems: "center", position: "relative", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, opacity: 0.08, WebkitMaskImage: "radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)", maskImage: "radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)" }}>
+        <Image src="/gold-ice.png" alt="" fill style={{ objectFit: "cover" }} />
       </div>
       <div style={{ padding: "100px 8vw", position: "relative", zIndex: 1 }}>
-        <R><h2 style={{
-          fontFamily: "'Cormorant',serif", fontSize: "clamp(48px,10vw,160px)",
-          fontWeight: 300, lineHeight: 0.88, letterSpacing: "-0.04em",
-          color: C.ice, margin: "0 0 48px"
-        }}>Enter<br /><em style={{ color: C.gold }}>Infinity.</em></h2></R>
+        <R><h2 style={{ fontFamily: "'Cormorant',serif", fontSize: "clamp(48px,10vw,160px)", fontWeight: 300, lineHeight: 0.88, letterSpacing: "-0.04em", color: C.ice, margin: "0 0 48px" }}>Enter<br /><em style={{ color: C.gold }}>Infinity.</em></h2></R>
         <R delay={0.15}><div style={{ maxWidth: 500 }}>
-          <p style={{
-            fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 300,
-            lineHeight: 1.7, color: C.frost, opacity: 0.5, marginBottom: 40
-          }}>First access to new collections. Partner announcements. Invitations.</p>
+          <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 300, lineHeight: 1.7, color: C.frost, opacity: 0.5, marginBottom: 40 }}>First access to new collections. Partner announcements. Invitations.</p>
           {!done ? (
             <div style={{ display: "flex", border: `1px solid ${C.faint}`, background: `${C.faint}40` }}>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="your@email.com" style={{
-                  flex: 1, padding: "18px 24px", fontFamily: "'DM Mono',monospace", fontSize: 13,
-                  fontWeight: 300, border: "none", outline: "none", background: "transparent",
-                  color: C.ice, letterSpacing: "0.03em"
-                }} />
-              <button onClick={() => email && setDone(true)} style={{
-                fontFamily: "'DM Mono',monospace", fontSize: 10, letterSpacing: "0.2em",
-                textTransform: "uppercase", padding: "18px 32px", background: C.gold,
-                color: C.void, border: "none", cursor: "pointer", transition: "background 0.3s ease"
-              }}
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, padding: "18px 24px", fontFamily: "'DM Mono',monospace", fontSize: 13, fontWeight: 300, border: "none", outline: "none", background: "transparent", color: C.ice, letterSpacing: "0.03em" }} />
+              <button onClick={() => email && setDone(true)} style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", padding: "18px 32px", background: C.gold, color: C.void, border: "none", cursor: "pointer" }}
                 onMouseEnter={e => { (e.target as HTMLElement).style.background = C.ice; }}
-                onMouseLeave={e => { (e.target as HTMLElement).style.background = C.gold; }}
-              >Join</button>
+                onMouseLeave={e => { (e.target as HTMLElement).style.background = C.gold; }}>Join</button>
             </div>
           ) : (
-            <div style={{
-              fontFamily: "'Cormorant',serif", fontSize: 28, fontWeight: 300,
-              fontStyle: "italic", color: C.gold
-            }}>Welcome to Infinity.</div>
+            <div style={{ fontFamily: "'Cormorant',serif", fontSize: 28, fontWeight: 300, fontStyle: "italic", color: C.gold }}>Welcome to Infinity.</div>
           )}
         </div></R>
       </div>
@@ -654,7 +452,6 @@ function Conversion() {
   );
 }
 
-/* ─── FOOTER ─── */
 function Footer() {
   return (
     <footer style={{ background: C.void, padding: "64px 8vw 48px", borderTop: `1px solid ${C.faint}` }}>
@@ -664,19 +461,14 @@ function Footer() {
             Infinity<span style={{ fontWeight: 300, fontStyle: "italic", color: C.gold }}> Water</span>
           </div>
           <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, color: C.frost, opacity: 0.25 }}>
-            © 2026 Infinity Water — A Kollective Hospitality Group Brand
+            © 2026 Infinity Water · Belgium · A Kollective Hospitality Group Brand
           </div>
         </div>
         <div style={{ display: "flex", gap: 28 }}>
           {["Instagram", "Press", "Legal"].map(l => (
-            <a key={l} href="#" style={{
-              fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.15em",
-              textTransform: "uppercase", color: C.frost, textDecoration: "none",
-              opacity: 0.3, transition: "opacity 0.3s"
-            }}
+            <a key={l} href="#" style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", color: C.frost, textDecoration: "none", opacity: 0.3, transition: "opacity 0.3s" }}
               onMouseEnter={e => { (e.target as HTMLElement).style.opacity = "1"; }}
-              onMouseLeave={e => { (e.target as HTMLElement).style.opacity = "0.3"; }}
-            >{l}</a>
+              onMouseLeave={e => { (e.target as HTMLElement).style.opacity = "0.3"; }}>{l}</a>
           ))}
         </div>
       </div>
@@ -684,14 +476,13 @@ function Footer() {
   );
 }
 
-/* ─── MAIN ─── */
 export default function HomePage() {
   const [loaded, setLoaded] = useState(false);
   return (
     <main style={{ overflowX: "hidden" }}>
       <style>{`
         @media(max-width:900px){
-          div[style*="grid-template-columns: 1fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important}
+          div[style*="grid-template-columns: 1fr 1fr 1fr"]{grid-template-columns:1fr!important}
           div[style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}
           h1{font-size:52px!important}
           .nav-link-hide{display:none}
@@ -705,7 +496,9 @@ export default function HomePage() {
       <HeroProduct />
       <Collections />
       <CinematicSection />
+      <BelgianOrigin />
       <FullLineup />
+      <SpiralGrid />
       <LifestyleGallery />
       <AnimationBreak />
       <LuxuryContext />
