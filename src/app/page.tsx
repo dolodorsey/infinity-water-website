@@ -133,8 +133,8 @@ function HeroProduct(){return(
 <div style={{fontFamily:"'Cormorant',serif",fontSize:36,fontWeight:300,color:C.deep}}>{s.n}</div>
 <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,letterSpacing:"0.35em",textTransform:"uppercase",color:C.frost,marginTop:4}}>{s.l}</div></div>))}
 </div></R></div></div>
-<R delay={0.1} dir="left" style={{position:"relative",minHeight:500}}>
-<div style={{position:"absolute",inset:0,WebkitMaskImage:"linear-gradient(to right, transparent 0%, black 15%, black 100%), linear-gradient(to bottom, black 0%, black 85%, transparent 100%)",maskImage:"linear-gradient(to right, transparent 0%, black 15%, black 100%), linear-gradient(to bottom, black 0%, black 85%, transparent 100%)",WebkitMaskComposite:"intersect" as unknown as string,maskComposite:"intersect"}}>
+<R delay={0.1} dir="left" style={{position:"relative",minHeight:600}}>
+<div style={{position:"absolute",inset:"-10%",width:"120%",height:"120%",WebkitMaskImage:"linear-gradient(to right, transparent 0%, black 10%, black 100%), linear-gradient(to bottom, black 0%, black 90%, transparent 100%)",maskImage:"linear-gradient(to right, transparent 0%, black 10%, black 100%), linear-gradient(to bottom, black 0%, black 90%, transparent 100%)",WebkitMaskComposite:"intersect" as unknown as string,maskComposite:"intersect"}}>
 <Image src="/gold-splash.png" alt="Infinity Water Gold" fill style={{objectFit:"cover",objectPosition:"center"}} priority/>
 </div></R>
 </div></section>)}
@@ -200,7 +200,7 @@ function BelgianOrigin(){return(
 function FullLineup(){return(
 <section style={{background:C.ice,position:"relative",overflow:"hidden"}}>
 <div style={{padding:"120px 8vw 44px"}}><R><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(52px,9vw,140px)",fontWeight:300,fontStyle:"italic",lineHeight:0.88,letterSpacing:"-0.045em",color:C.deep,margin:0}}>The Full<br/>Collection.</h2></R></div>
-<R delay={0.15}><div style={{position:"relative",width:"100%",height:"clamp(350px,48vh,650px)",WebkitMaskImage:"linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)",maskImage:"linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)",WebkitMaskComposite:"intersect" as unknown as string,maskComposite:"intersect"}}>
+<R delay={0.15}><div style={{position:"relative",width:"100%",height:"clamp(450px,60vh,850px)",WebkitMaskImage:"linear-gradient(to bottom, black 0%, black 80%, transparent 100%), linear-gradient(to right, transparent 1%, black 6%, black 94%, transparent 99%)",maskImage:"linear-gradient(to bottom, black 0%, black 80%, transparent 100%), linear-gradient(to right, transparent 1%, black 6%, black 94%, transparent 99%)",WebkitMaskComposite:"intersect" as unknown as string,maskComposite:"intersect"}}>
 <Image src="/v-formation.png" alt="All bottles V formation" fill style={{objectFit:"contain",objectPosition:"center"}}/>
 </div></R></section>)}
 
@@ -222,7 +222,7 @@ function LifestyleGallery(){const scenes=[{img:"/lifestyle-picnic.png",label:"Go
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice,margin:"0 0 72px"}}>Where Infinity<br/><em style={{color:C.gold}}>lives.</em></h2></R>
 <div className="lifestyle-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
 {scenes.map((s,i)=>(<R key={s.label} delay={0.06*i}>
-<div style={{position:"relative",aspectRatio:i===0||i===4?"4/5":"3/4",overflow:"hidden",cursor:"pointer",WebkitMaskImage:"radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",maskImage:"radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1)"}}
+<div style={{position:"relative",aspectRatio:"3/4",overflow:"hidden",cursor:"pointer",WebkitMaskImage:"radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",maskImage:"radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1)"}}
 onMouseEnter={e=>{const img=e.currentTarget.querySelector("img") as HTMLElement;if(img)img.style.transform="scale(1.06)"}}
 onMouseLeave={e=>{const img=e.currentTarget.querySelector("img") as HTMLElement;if(img)img.style.transform="scale(1)"}}>
 <Image src={s.img} alt={s.label} fill style={{objectFit:"cover",transition:"transform 0.8s cubic-bezier(0.16,1,0.3,1)"}}/>
@@ -252,7 +252,7 @@ function GalleryStudio(){return(
 <R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.water,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.water,display:"inline-block"}}/>Studio</div></R>
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(40px,6vw,72px)",fontWeight:300,lineHeight:1.02,color:C.deep}}>Designed to be<br/><em>displayed.</em></h2></R>
 </div>
-<R delay={0.15}><div style={{position:"relative",width:"100%",height:"clamp(350px,48vh,650px)",WebkitMaskImage:"linear-gradient(to bottom, black 0%, black 70%, transparent 100%), linear-gradient(to right, transparent 3%, black 12%, black 88%, transparent 97%)",maskImage:"linear-gradient(to bottom, black 0%, black 70%, transparent 100%), linear-gradient(to right, transparent 3%, black 12%, black 88%, transparent 97%)",WebkitMaskComposite:"intersect" as unknown as string,maskComposite:"intersect"}}>
+<R delay={0.15}><div style={{position:"relative",width:"100%",height:"clamp(450px,58vh,800px)",WebkitMaskImage:"linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)",maskImage:"linear-gradient(to bottom, black 0%, black 75%, transparent 100%), linear-gradient(to right, transparent 2%, black 10%, black 90%, transparent 98%)",WebkitMaskComposite:"intersect" as unknown as string,maskComposite:"intersect"}}>
 <Image src="/lineup-full.png" alt="Infinity Water full lineup" fill style={{objectFit:"contain"}}/>
 </div></R><div style={{height:84}}/></section>)}
 
