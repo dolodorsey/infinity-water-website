@@ -105,7 +105,17 @@ function VideoIntroHero(){
         <div style={{width:1,height:28,background:`linear-gradient(180deg,transparent,${C.gold})`,animation:"ipulse 2.5s ease-in-out infinite"}}/>
         <div style={{fontFamily:"'DM Mono',monospace",fontSize:7,letterSpacing:"0.4em",textTransform:"uppercase",color:C.frost}}>Scroll</div>
       </div>
-      <style>{`@keyframes ipulse{0%,100%{opacity:0.2}50%{opacity:0.8}}`}</style>
+      <style>{`@keyframes ipulse{0%,100%{opacity:0.2}50%{opacity:0.8}}`}
+@media(max-width:768px){
+  .dg,.DG,[style*="gridTemplateColumns"]{grid-template-columns:1fr!important}
+  .nl,.desktop-nav{display:none!important}
+  .fg,.stat-grid,.feature-grid{grid-template-columns:1fr!important}
+  .eg{grid-template-columns:1fr!important}
+  h1,h2,.hero-title{word-break:break-word}
+  nav{padding:16px!important}
+  section{padding-left:16px!important;padding-right:16px!important}
+}
+</style>
     </section>
     </>
   );
@@ -123,7 +133,7 @@ function Nav(){const[s,setS]=useState(false);useEffect(()=>{const fn=()=>setS(wi
 /* ─── HERO PRODUCT ─── */
 function HeroProduct(){return(
 <section style={{position:"relative",overflow:"hidden",background:C.ice}}>
-<div className="hero-prod-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"90vh"}}>
+<div className="dg hero-prod-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"90vh"}}>
 <div style={{display:"flex",alignItems:"center",padding:"100px 6vw 100px 8vw"}}><div>
 <R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.water,marginBottom:44,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.water,display:"inline-block"}}/>The Vessel</div></R>
 <R delay={0.12}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,6vw,88px)",fontWeight:300,lineHeight:0.98,letterSpacing:"-0.035em",color:C.deep,margin:"0 0 36px"}}>Not a bottle.<br/><em style={{color:C.gold}}>A sculpture.</em></h2></R>
@@ -150,7 +160,7 @@ function Collections(){const cols=[
 <R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Three Collections · Three Waters</div></R>
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice,margin:"0 0 72px"}}>Every color.<br/><em style={{color:C.gold}}>A purpose.</em></h2></R>
 </div>
-<div className="collections-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:2,padding:"0 2px"}}>
+<div className="dg collections-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:2,padding:"0 2px"}}>
 {cols.map((col,i)=>(<R key={col.name} delay={0.1*i}>
 <div style={{position:"relative",background:C.faint,overflow:"hidden",padding:"52px 36px 0",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}}
   onMouseEnter={e=>{e.currentTarget.style.background="#1A222C"}} onMouseLeave={e=>{e.currentTarget.style.background=C.faint}}>
@@ -179,7 +189,7 @@ function CinematicFloat(){return(
 /* ─── BELGIAN ORIGIN ─── */
 function BelgianOrigin(){return(
 <section id="origin" style={{background:C.void,position:"relative",overflow:"hidden"}}>
-<div className="origin-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"80vh"}}>
+<div className="dg origin-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"80vh"}}>
 <R style={{position:"relative",minHeight:500}}>
 <div style={{position:"absolute",inset:0,WebkitMaskImage:"radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)",maskImage:"radial-gradient(ellipse 80% 75% at 50% 50%, black 40%, transparent 100%)"}}>
 <Image src="/gold-ice.png" alt="Gold bottle in ice" fill style={{objectFit:"cover",objectPosition:"center"}}/>
@@ -188,7 +198,7 @@ function BelgianOrigin(){return(
 <R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:44,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Origin</div></R>
 <R delay={0.12}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(40px,5vw,72px)",fontWeight:300,lineHeight:1.02,letterSpacing:"-0.035em",color:C.ice,margin:"0 0 36px"}}>Born in<br/><em style={{color:C.gold}}>Belgium.</em></h2></R>
 <R delay={0.25}><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(14px,1.2vw,17px)",fontWeight:300,lineHeight:1.9,color:C.frost,opacity:0.5,maxWidth:440,marginBottom:44}}>Sourced from protected aquifers deep beneath the Ardennes. Filtered through millennia of Devonian limestone. Bottled at origin — never transported in bulk, never treated, never compromised.</p></R>
-<R delay={0.35}><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:2}}>
+<R delay={0.35}><div className="dg" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:2}}>
 {[{label:"Source",value:"Ardennes Aquifer"},{label:"Filtration",value:"Natural Limestone"},{label:"Bottled",value:"At Origin"},{label:"Three Waters",value:"Sparkling · Spring · Alkaline"}].map(item=>(<div key={item.label} style={{background:C.faint,padding:"22px 18px"}}>
 <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,letterSpacing:"0.4em",textTransform:"uppercase",color:C.gold,marginBottom:8}}>{item.label}</div>
 <div style={{fontFamily:"'Cormorant',serif",fontSize:17,fontWeight:400,color:C.ice,lineHeight:1.4}}>{item.value}</div>
@@ -220,7 +230,7 @@ function LifestyleGallery(){const scenes=[{img:"/lifestyle-picnic.png",label:"Go
 <section id="lifestyle" style={{padding:"80px 8vw",background:C.void}}>
 <R><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.45em",textTransform:"uppercase",color:C.gold,marginBottom:36,display:"flex",alignItems:"center",gap:12}}><span style={{width:40,height:1,background:C.gold,display:"inline-block"}}/>Lifestyle</div></R>
 <R delay={0.1}><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice,margin:"0 0 72px"}}>Where Infinity<br/><em style={{color:C.gold}}>lives.</em></h2></R>
-<div className="lifestyle-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
+<div className="dg lifestyle-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
 {scenes.map((s,i)=>(<R key={s.label} delay={0.06*i}>
 <div style={{position:"relative",aspectRatio:"3/4",overflow:"hidden",cursor:"pointer",WebkitMaskImage:"radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",maskImage:"radial-gradient(ellipse 78% 72% at 50% 45%, black 45%, transparent 100%)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1)"}}
 onMouseEnter={e=>{const img=e.currentTarget.querySelector("img") as HTMLElement;if(img)img.style.transform="scale(1.06)"}}
@@ -237,7 +247,7 @@ function LuxuryContext(){return(
 <R><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(44px,7vw,96px)",fontWeight:300,lineHeight:0.92,color:C.ice,margin:"0 0 20px"}}>Everywhere<br/><em style={{color:C.gold}}>that matters.</em></h2></R>
 <R delay={0.1}><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:300,lineHeight:1.75,color:C.frost,opacity:0.45,maxWidth:420,marginBottom:36}}>Private aviation. Five-star suites. Yacht decks. The standard for premium hospitality worldwide.</p></R>
 </div>
-<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:3}}>
+<div className="dg" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:3}}>
 {[{img:"/luxury-hotel.png",label:"Five-Star Suites"},{img:"/luxury-jet.png",label:"Private Aviation"},{img:"/luxury-jetbucket.png",label:"First Class"}].map((s,i)=>(<R key={s.label} delay={0.08*i}>
 <div style={{position:"relative",aspectRatio:"4/3",overflow:"hidden",WebkitMaskImage:"radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)",maskImage:"radial-gradient(ellipse 80% 75% at 50% 45%, black 45%, transparent 100%)"}}>
 <Image src={s.img} alt={s.label} fill style={{objectFit:"cover"}}/>
