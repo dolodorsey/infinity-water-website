@@ -106,15 +106,6 @@ function VideoIntroHero(){
         <div style={{fontFamily:"'DM Mono',monospace",fontSize:7,letterSpacing:"0.4em",textTransform:"uppercase",color:C.frost}}>Scroll</div>
       </div>
       <style>{`@keyframes ipulse{0%,100%{opacity:0.2}50%{opacity:0.8}}`}
-@media(max-width:768px){
-  .dg,.DG,[style*="gridTemplateColumns"]{grid-template-columns:1fr!important}
-  .nl,.desktop-nav{display:none!important}
-  .fg,.stat-grid,.feature-grid{grid-template-columns:1fr!important}
-  .eg{grid-template-columns:1fr!important}
-  h1,h2,.hero-title{word-break:break-word}
-  nav{padding:16px!important}
-  section{padding-left:16px!important;padding-right:16px!important}
-}
 </style>
     </section>
     </>
@@ -299,6 +290,16 @@ export default function HomePage(){return(
 div[style*="grid-template-columns: 1fr 1fr 1fr"]{grid-template-columns:1fr!important}
 h1{font-size:52px!important}
 .nav-link-hide{display:none}
+}
+
+@media(max-width:768px){
+  .dg,.DG,[style*="gridTemplateColumns"]{grid-template-columns:1fr!important}
+  .nl,.desktop-nav{display:none!important}
+  .fg,.stat-grid,.feature-grid{grid-template-columns:1fr!important}
+  .eg{grid-template-columns:1fr!important}
+  h1,h2,.hero-title{word-break:break-word}
+  nav{padding:16px!important}
+  section{padding-left:16px!important;padding-right:16px!important}
 }
 `}</style>
 <Grain/>
