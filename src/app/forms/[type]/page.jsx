@@ -80,12 +80,12 @@ const CATS = ['Events','Creative','Business','Team','General'];
 const CAT_ICONS = {Events:'🎪',Creative:'🎨',Business:'💼',Team:'👥',General:'📋'};
 
 function Input({field:f,value:v,onChange:c,brand:b}){
-  const base={width:'100%',padding:'14px 16px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:8,color:'#fff',fontSize:15,fontFamily:"'DM Sans',sans-serif",outline:'none',boxSizing:'border-box',backdropFilter:'blur(8px)',transition:'border-color 0.3s'};
+  const base={width:'100%',padding:'14px 16px',background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.18)',borderRadius:8,color:'#fff',fontSize:15,fontFamily:"'DM Sans',sans-serif",outline:'none',boxSizing:'border-box',backdropFilter:'blur(8px)',transition:'border-color 0.3s'};
   const focus=e=>e.target.style.borderColor=b.accent+'80';
-  const blur=e=>e.target.style.borderColor='rgba(255,255,255,0.1)';
+  const blur=e=>e.target.style.borderColor='rgba(255,255,255,0.18)';
   if(f.t==='textarea')return<textarea name={f.n} required={f.r} rows={4} value={v||''} onChange={e=>c(f.n,e.target.value)} style={{...base,resize:'vertical'}} onFocus={focus} onBlur={blur}/>;
-  if(f.t==='select')return<select name={f.n} required={f.r} value={v||''} onChange={e=>c(f.n,e.target.value)} style={{...base,color:v?'#fff':'rgba(255,255,255,0.35)',cursor:'pointer',appearance:'none'}}><option value="" style={{background:'#111'}}>Select...</option>{(f.o||[]).map(o=><option key={o} value={o} style={{background:'#111',color:'#fff'}}>{o}</option>)}</select>;
-  if(f.t==='checkbox')return<label style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',fontSize:14,fontFamily:"'DM Sans',sans-serif",lineHeight:1.5,color:'rgba(255,255,255,0.75)'}}><input type="checkbox" name={f.n} required={f.r} checked={v||false} onChange={e=>c(f.n,e.target.checked)} style={{marginTop:3,accentColor:b.accent,width:18,height:18,flexShrink:0}}/>{f.l}</label>;
+  if(f.t==='select')return<select name={f.n} required={f.r} value={v||''} onChange={e=>c(f.n,e.target.value)} style={{...base,color:v?'#fff':'rgba(255,255,255,0.6)',cursor:'pointer',appearance:'none'}}><option value="" style={{background:'#111'}}>Select...</option>{(f.o||[]).map(o=><option key={o} value={o} style={{background:'#111',color:'#fff'}}>{o}</option>)}</select>;
+  if(f.t==='checkbox')return<label style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',fontSize:14,fontFamily:"'DM Sans',sans-serif",lineHeight:1.5,color:'rgba(255,255,255,0.95)'}}><input type="checkbox" name={f.n} required={f.r} checked={v||false} onChange={e=>c(f.n,e.target.checked)} style={{marginTop:3,accentColor:b.accent,width:18,height:18,flexShrink:0}}/>{f.l}</label>;
   return<input type={f.t} name={f.n} required={f.r} value={v||''} onChange={e=>c(f.n,e.target.value)} style={base} onFocus={focus} onBlur={blur}/>;
 }
 
@@ -112,7 +112,7 @@ function FormsIndex(){
             <h1 style={{fontSize:'clamp(36px,7vw,64px)',fontWeight:300,lineHeight:1.05,margin:'0 0 16px',letterSpacing:'-0.03em',color:'#fff',fontFamily:BRAND.font}}>
               Connect With Us
             </h1>
-            <p style={{fontSize:'clamp(14px,1.5vw,17px)',color:'rgba(255,255,255,0.45)',maxWidth:520,margin:'0 auto',lineHeight:1.6,fontFamily:"'DM Sans',sans-serif"}}>
+            <p style={{fontSize:'clamp(14px,1.5vw,17px)',color:'rgba(255,255,255,0.85)',maxWidth:520,margin:'0 auto',lineHeight:1.6,fontFamily:"'DM Sans',sans-serif"}}>
               Whether you are a vendor, artist, sponsor, volunteer, or just want to collaborate — we would love to hear from you.
             </p>
           </div>
@@ -121,8 +121,8 @@ function FormsIndex(){
             {['All',...CATS].map(c=>(
               <button key={c} onClick={()=>setFilter(c)} style={{
                 padding:'8px 18px',borderRadius:100,border:filter===c?`1px solid ${BRAND.accent}`:'1px solid rgba(255,255,255,0.1)',
-                background:filter===c?`${BRAND.accent}18`:'rgba(255,255,255,0.04)',
-                color:filter===c?BRAND.accent:'rgba(255,255,255,0.5)',fontSize:12,fontFamily:"'DM Sans',sans-serif",
+                background:filter===c?`${BRAND.accent}18`:'rgba(255,255,255,0.08)',
+                color:filter===c?BRAND.accent:'rgba(255,255,255,0.9)',fontSize:12,fontFamily:"'DM Sans',sans-serif",
                 fontWeight:500,letterSpacing:1,textTransform:'uppercase',cursor:'pointer',transition:'all 0.3s',backdropFilter:'blur(12px)'
               }}>
                 {c!=='All'&&<span style={{marginRight:6}}>{CAT_ICONS[c]}</span>}{c}
@@ -134,23 +134,23 @@ function FormsIndex(){
             {filtered.map(([key,form])=>(
               <a key={key} href={`/forms/${key}`} style={{
                 display:'block',padding:'24px 22px',background:'rgba(0,0,0,0.45)',backdropFilter:'blur(20px) saturate(1.3)',
-                border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,textDecoration:'none',color:'#fff',
+                border:'1px solid rgba(255,255,255,0.15)',borderRadius:14,textDecoration:'none',color:'#fff',
                 transition:'all 0.4s cubic-bezier(0.16,1,0.3,1)',position:'relative',overflow:'hidden'
               }}
               onMouseEnter={e=>{e.currentTarget.style.background=`rgba(0,0,0,0.6)`;e.currentTarget.style.borderColor=`${BRAND.accent}35`;e.currentTarget.style.transform='translateY(-4px) scale(1.01)'}}
-              onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,0,0,0.45)';e.currentTarget.style.borderColor='rgba(255,255,255,0.08)';e.currentTarget.style.transform='translateY(0) scale(1)'}}>
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,0,0,0.45)';e.currentTarget.style.borderColor='rgba(255,255,255,0.15)';e.currentTarget.style.transform='translateY(0) scale(1)'}}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
                   <span style={{fontSize:28}}>{form.icon}</span>
-                  <span style={{fontSize:9,letterSpacing:2,textTransform:'uppercase',color:BRAND.accent,fontFamily:"'DM Sans',sans-serif",opacity:0.7,background:`${BRAND.accent}12`,padding:'4px 10px',borderRadius:100}}>{form.cat}</span>
+                  <span style={{fontSize:9,letterSpacing:2,textTransform:'uppercase',color:BRAND.accent,fontFamily:"'DM Sans',sans-serif",opacity:1,background:`${BRAND.accent}20`,padding:'4px 10px',borderRadius:100}}>{form.cat}</span>
                 </div>
                 <h3 style={{fontSize:17,fontWeight:500,margin:'0 0 6px',fontFamily:"'DM Sans',sans-serif",letterSpacing:'-0.01em'}}>{form.title}</h3>
-                <p style={{fontSize:13,color:'rgba(255,255,255,0.4)',margin:0,fontFamily:"'DM Sans',sans-serif",lineHeight:1.5}}>{form.sub}</p>
+                <p style={{fontSize:13,color:'rgba(255,255,255,0.8)',margin:0,fontFamily:"'DM Sans',sans-serif",lineHeight:1.5}}>{form.sub}</p>
                 <div style={{position:'absolute',bottom:0,left:0,right:0,height:2,background:`linear-gradient(90deg, transparent, ${BRAND.accent}40, transparent)`,opacity:0}}/>
               </a>
             ))}
           </div>
           {/* Footer */}
-          <p style={{textAlign:'center',marginTop:50,fontSize:11,color:'rgba(255,255,255,0.2)',fontFamily:"'DM Sans',sans-serif",letterSpacing:1}}>
+          <p style={{textAlign:'center',marginTop:50,fontSize:11,color:'rgba(255,255,255,0.5)',fontFamily:"'DM Sans',sans-serif",letterSpacing:1}}>
             © {new Date().getFullYear()} {BRAND.name} — Powered by The Kollective Hospitality Group
           </p>
         </div>
@@ -179,7 +179,7 @@ export default function FormPage({params}){
         <div style={{textAlign:'center',maxWidth:480}}>
           <div style={{width:72,height:72,borderRadius:'50%',border:`2px solid ${BRAND.accent}`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px',fontSize:32,color:BRAND.accent}}>✓</div>
           <h1 style={{fontSize:32,fontWeight:300,marginBottom:12,color:'#fff',fontFamily:BRAND.font}}>Submitted</h1>
-          <p style={{fontSize:15,color:'rgba(255,255,255,0.5)',fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>Thank you{data.full_name?', '+data.full_name:''}. We received your {form.title.toLowerCase()} and will be in touch shortly.</p>
+          <p style={{fontSize:15,color:'rgba(255,255,255,0.85)',fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>Thank you{data.full_name?', '+data.full_name:''}. We received your {form.title.toLowerCase()} and will be in touch shortly.</p>
           <a href={'/forms/'+type} style={{display:'inline-block',marginTop:32,padding:'12px 32px',border:`1px solid ${BRAND.accent}60`,color:BRAND.accent,borderRadius:6,textDecoration:'none',fontSize:13,letterSpacing:1,textTransform:'uppercase',fontFamily:"'DM Sans',sans-serif"}}>Submit Another</a>
         </div>
       </div>
@@ -197,20 +197,20 @@ export default function FormPage({params}){
       {/* Form */}
       <div style={{position:'relative',zIndex:2,padding:'clamp(80px,12vw,120px) 20px 80px'}}>
         <div style={{maxWidth:560,margin:'0 auto'}}>
-          <div style={{background:'rgba(0,0,0,0.5)',backdropFilter:'blur(24px) saturate(1.3)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:20,padding:'clamp(28px,5vw,48px)',boxShadow:'0 20px 80px rgba(0,0,0,0.5)'}}>
+          <div style={{background:'rgba(0,0,0,0.5)',backdropFilter:'blur(24px) saturate(1.3)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:20,padding:'clamp(28px,5vw,48px)',boxShadow:'0 20px 80px rgba(0,0,0,0.5)'}}>
             {/* Form Header */}
             <div style={{textAlign:'center',marginBottom:36}}>
-              <a href="/forms" style={{fontSize:11,letterSpacing:4,textTransform:'uppercase',color:BRAND.accent,textDecoration:'none',fontFamily:"'DM Sans',sans-serif",display:'inline-block',marginBottom:16,opacity:0.8}}>← {BRAND.name} Forms</a>
+              <a href="/forms" style={{fontSize:11,letterSpacing:4,textTransform:'uppercase',color:BRAND.accent,textDecoration:'none',fontFamily:"'DM Sans',sans-serif",display:'inline-block',marginBottom:16,opacity:1}}>← {BRAND.name} Forms</a>
               <div style={{fontSize:36,marginBottom:12}}>{form.icon}</div>
               <h1 style={{fontSize:'clamp(24px,4vw,36px)',fontWeight:300,lineHeight:1.15,margin:'0 0 8px',letterSpacing:'-0.02em',color:'#fff',fontFamily:BRAND.font}}>{form.title}</h1>
-              <p style={{fontSize:14,color:'rgba(255,255,255,0.4)',fontFamily:"'DM Sans',sans-serif",margin:0}}>{form.sub}</p>
-              <div style={{width:40,height:1,background:BRAND.accent,margin:'20px auto 0',opacity:0.4}}/>
+              <p style={{fontSize:14,color:'rgba(255,255,255,0.8)',fontFamily:"'DM Sans',sans-serif",margin:0}}>{form.sub}</p>
+              <div style={{width:40,height:1,background:BRAND.accent,margin:'20px auto 0',opacity:0.7}}/>
             </div>
             {/* Form Fields */}
             <form onSubmit={submit}>
               <div style={{display:'flex',flexDirection:'column',gap:18}}>
                 {form.fields.map(f=><div key={f.n}>
-                  {f.t!=='checkbox'&&<label style={{display:'block',fontSize:11,letterSpacing:2,textTransform:'uppercase',marginBottom:8,color:'rgba(255,255,255,0.5)',fontFamily:"'DM Sans',sans-serif",fontWeight:500}}>{f.l}{f.r?<span style={{color:BRAND.accent,marginLeft:4}}>*</span>:null}</label>}
+                  {f.t!=='checkbox'&&<label style={{display:'block',fontSize:11,letterSpacing:2,textTransform:'uppercase',marginBottom:8,color:'rgba(255,255,255,0.9)',fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>{f.l}{f.r?<span style={{color:BRAND.accent,marginLeft:4}}>*</span>:null}</label>}
                   <Input field={f} value={data[f.n]} onChange={set} brand={BRAND}/>
                 </div>)}
               </div>
@@ -220,7 +220,7 @@ export default function FormPage({params}){
               </button>
             </form>
           </div>
-          <p style={{textAlign:'center',marginTop:32,fontSize:11,color:'rgba(255,255,255,0.2)',fontFamily:"'DM Sans',sans-serif",letterSpacing:1}}>© {new Date().getFullYear()} {BRAND.name} — Powered by The Kollective</p>
+          <p style={{textAlign:'center',marginTop:32,fontSize:11,color:'rgba(255,255,255,0.5)',fontFamily:"'DM Sans',sans-serif",letterSpacing:1}}>© {new Date().getFullYear()} {BRAND.name} — Powered by The Kollective</p>
         </div>
       </div>
     </div>
