@@ -32,8 +32,6 @@ export default function KHGFormModal({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      setFormData({});
-      setStatus('idle');
     } else {
       document.body.style.overflow = '';
     }
