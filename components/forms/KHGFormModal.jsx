@@ -91,7 +91,7 @@ export default function KHGFormModal({
         setStatus('error');
         setErrorMsg(data.error || 'Something went wrong. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setStatus('error');
       setErrorMsg('Network error. Please try again.');
     }

@@ -374,12 +374,13 @@ function FormModal({ formType, brandKey, onClose }) {
     e.preventDefault();
     setStatus('submitting');
     try {
-      const res = await fetch('/api/forms/submit', {
+      const res = await fetch('/api/forms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ brand_key: brandKey, form_type: formType, ...formData }),
       });
-      if (res.ok) {
+      const payload = await res.json().catch(() => ({}));
+      if (res.ok && payload.success) {
         setStatus('success');
       } else {
         setStatus('error');
@@ -443,7 +444,7 @@ function FormModal({ formType, brandKey, onClose }) {
                 Submitted
               </h3>
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 32 }}>
-                We'll be in touch soon.
+                We&apos;ll be in touch soon.
               </p>
               <button onClick={onClose} style={{
                 padding: '12px 32px', background: 'var(--accent, #FF6B35)',

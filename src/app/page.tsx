@@ -118,7 +118,7 @@ function Nav(){const[s,setS]=useState(false);useEffect(()=>{const fn=()=>setS(wi
 <a href="#" style={{display:"flex",alignItems:"center"}}><img src="/infinity-logo.png" alt="Infinity Water" style={{height:32,width:"auto",objectFit:"contain"}} /></a>
 <div style={{display:"flex",gap:36,alignItems:"center"}}>
 {["Collections","Origin","Lifestyle"].map(i=>(<a key={i} href={`#${i.toLowerCase()}`} className="nav-link-hide" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.deep:C.frost,textDecoration:"none",opacity:0.5,transition:"all 0.3s ease"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.5"}}>{i}</a>))}
-<a href="#order" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.ice:C.void,background:s?C.deep:C.gold,padding:"9px 24px",textDecoration:"none",transition:"all 0.4s ease"}}>Order</a>
+<a href="/connect" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.ice:C.void,background:s?C.deep:C.gold,padding:"9px 24px",textDecoration:"none",transition:"all 0.4s ease"}}>Partner</a>
 </div></nav>)}
 
 /* ─── HERO PRODUCT ─── */
@@ -258,17 +258,17 @@ function GalleryStudio(){return(
 </div></R><div style={{height:84}}/></section>)}
 
 /* ─── CONVERSION ─── */
-function Conversion(){const[email,setEmail]=useState("");const[done,setDone]=useState(false);return(
+function Conversion(){const[email,setEmail]=useState("");const[status,setStatus]=useState<"idle"|"submitting"|"success"|"error">("idle");const join=async()=>{if(!email||status==="submitting")return;setStatus("submitting");try{const response=await fetch("/api/forms",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({formType:"early_access",name:"Infinity Subscriber",email,source:"Infinity Water Homepage",fields:{interest:"Collections, partner announcements, and invitations"}})});const payload=await response.json().catch(()=>({}));setStatus(response.ok&&payload.success?"success":"error")}catch{setStatus("error")}};return(
 <section id="order" style={{minHeight:"80vh",background:C.void,display:"flex",alignItems:"center",position:"relative",overflow:"hidden"}}>
 <div style={{position:"absolute",inset:0,opacity:0.06,WebkitMaskImage:"radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)",maskImage:"radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)"}}><Image src="/gold-ice.png" alt="" fill style={{objectFit:"cover"}}/></div>
 <div style={{padding:"100px 8vw",position:"relative",zIndex:1}}>
 <R><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(52px,12vw,180px)",fontWeight:300,lineHeight:0.86,letterSpacing:"-0.05em",color:C.ice,margin:"0 0 52px"}}>Enter<br/><em style={{color:C.gold}}>Infinity.</em></h2></R>
 <R delay={0.15}><div style={{maxWidth:520}}>
 <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:300,lineHeight:1.75,color:C.frost,opacity:0.45,marginBottom:44}}>First access to new collections. Partner announcements. Invitations.</p>
-{!done?(<div style={{display:"flex",border:`1px solid ${C.faint}`,background:`${C.faint}40`}}>
+{status!=="success"?(<><div style={{display:"flex",border:`1px solid ${C.faint}`,background:`${C.faint}40`}}>
 <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" style={{flex:1,padding:"20px 28px",fontFamily:"'DM Mono',monospace",fontSize:13,fontWeight:300,border:"none",outline:"none",background:"transparent",color:C.ice,letterSpacing:"0.03em"}}/>
-<button onClick={()=>email&&setDone(true)} style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.22em",textTransform:"uppercase",padding:"20px 36px",background:C.gold,color:C.void,border:"none",cursor:"pointer",transition:"background 0.3s"}} onMouseEnter={e=>{(e.target as HTMLElement).style.background=C.ice}} onMouseLeave={e=>{(e.target as HTMLElement).style.background=C.gold}}>Join</button>
-</div>):(<div style={{fontFamily:"'Cormorant',serif",fontSize:30,fontWeight:300,fontStyle:"italic",color:C.gold}}>Welcome to Infinity.</div>)}
+<button onClick={join} disabled={status==="submitting"} style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.22em",textTransform:"uppercase",padding:"20px 36px",background:C.gold,color:C.void,border:"none",cursor:status==="submitting"?"wait":"pointer",transition:"background 0.3s"}} onMouseEnter={e=>{(e.target as HTMLElement).style.background=C.ice}} onMouseLeave={e=>{(e.target as HTMLElement).style.background=C.gold}}>{status==="submitting"?"Saving…":"Join"}</button>
+</div>{status==="error"?<div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#ef9a9a",marginTop:12}}>We could not save that yet. Please try again.</div>:null}</>):(<div style={{fontFamily:"'Cormorant',serif",fontSize:30,fontWeight:300,fontStyle:"italic",color:C.gold}}>Welcome to Infinity.</div>)}
 </div></R></div></section>)}
 
 /* ─── FOOTER ─── */
@@ -283,7 +283,7 @@ function Footer(){return(
 /* ─── MAIN ─── */
 export default function HomePage(){return(
 <main style={{overflowX:"hidden"}}>
-<style>{`
+<style suppressHydrationWarning>{`
 @media(max-width:900px){
 .collections-grid,.lifestyle-grid{grid-template-columns:1fr!important}
 .hero-prod-grid,.origin-grid{grid-template-columns:1fr!important}
