@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, use } from 'react';
+import Link from 'next/link';
 
 const BRAND_KEY = 'infinity_water';
 const BRAND = { name: 'Infinity Water', bg: '#060D14', accent: '#4FC3F7', text: '#E8F4FD', font: "'DM Sans', sans-serif" };
@@ -158,7 +159,8 @@ function FormsIndex(){
   );
 }
 
-export default function FormPage({params}){
+export default function FormPage(props) {
+  const params = use(props.params);
   const type=params?.type;
   const form=FORMS[type];
   const [data,setData]=useState({});
@@ -183,7 +185,7 @@ export default function FormPage({params}){
           <div style={{width:72,height:72,borderRadius:'50%',border:`2px solid ${BRAND.accent}`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px',fontSize:32,color:BRAND.accent}}>✓</div>
           <h1 style={{fontSize:32,fontWeight:300,marginBottom:12,color:'#fff',fontFamily:BRAND.font}}>Submitted</h1>
           <p style={{fontSize:15,color:'rgba(255,255,255,0.85)',fontFamily:"'DM Sans',sans-serif",lineHeight:1.6}}>Thank you{data.full_name?', '+data.full_name:''}. We received your {form.title.toLowerCase()} and will be in touch shortly.</p>
-          <a href={'/forms/'+type} style={{display:'inline-block',marginTop:32,padding:'12px 32px',border:`1px solid ${BRAND.accent}60`,color:BRAND.accent,borderRadius:6,textDecoration:'none',fontSize:13,letterSpacing:1,textTransform:'uppercase',fontFamily:"'DM Sans',sans-serif"}}>Submit Another</a>
+          <Link href={'/forms/'+type} style={{display:'inline-block',marginTop:32,padding:'12px 32px',border:`1px solid ${BRAND.accent}60`,color:BRAND.accent,borderRadius:6,textDecoration:'none',fontSize:13,letterSpacing:1,textTransform:'uppercase',fontFamily:"'DM Sans',sans-serif"}}>Submit Another</Link>
         </div>
       </div>
     </div>
@@ -203,7 +205,7 @@ export default function FormPage({params}){
           <div style={{background:'rgba(0,0,0,0.5)',backdropFilter:'blur(24px) saturate(1.3)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:20,padding:'clamp(28px,5vw,48px)',boxShadow:'0 20px 80px rgba(0,0,0,0.5)'}}>
             {/* Form Header */}
             <div style={{textAlign:'center',marginBottom:36}}>
-              <a href="/forms" style={{fontSize:11,letterSpacing:4,textTransform:'uppercase',color:BRAND.accent,textDecoration:'none',fontFamily:"'DM Sans',sans-serif",display:'inline-block',marginBottom:16,opacity:1}}>← {BRAND.name} Forms</a>
+              <Link href="/forms" style={{fontSize:11,letterSpacing:4,textTransform:'uppercase',color:BRAND.accent,textDecoration:'none',fontFamily:"'DM Sans',sans-serif",display:'inline-block',marginBottom:16,opacity:1}}>← {BRAND.name} Forms</Link>
               <div style={{fontSize:36,marginBottom:12}}>{form.icon}</div>
               <h1 style={{fontSize:'clamp(24px,4vw,36px)',fontWeight:300,lineHeight:1.15,margin:'0 0 8px',letterSpacing:'-0.02em',color:'#fff',fontFamily:BRAND.font}}>{form.title}</h1>
               <p style={{fontSize:14,color:'rgba(255,255,255,0.8)',fontFamily:"'DM Sans',sans-serif",margin:0}}>{form.sub}</p>

@@ -95,14 +95,14 @@ export default function KHGFormsGrid({
       </section>
 
       {/* FORM MODAL */}
-      <KHGFormModal
+      {activeForm && <KHGFormModal
         isOpen={!!activeForm}
         formType={activeForm}
         formConfig={activeForm ? FORM_TYPES[activeForm] : null}
         brandAccent={config.accent}
         brandName={config.name}
         onClose={() => setActiveForm(null)}
-      />
+      />}
     </>
   );
 }
@@ -237,14 +237,14 @@ export function KHGFormTrigger({
         {label || formConfig.label}
       </button>
 
-      <KHGFormModal
+      {isOpen && <KHGFormModal
         isOpen={isOpen}
         formType={formKey}
         formConfig={formConfig}
         brandAccent={config.accent}
         brandName={config.name}
         onClose={() => setIsOpen(false)}
-      />
+      />}
     </>
   );
 }
