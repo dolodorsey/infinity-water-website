@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://infinity-water.vercel.app"),
   title: "Infinity Water — Premium Hydration",
   description: "Where industrial precision meets the ritual of hydration. Sourced. Filtered. Sculpted.",
   openGraph: {

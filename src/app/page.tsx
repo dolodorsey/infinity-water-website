@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 /* ═══════════════════════════════════════════════════════════════════════
    INFINITY WATER — V3 EXTRAORDINARY
@@ -115,10 +116,10 @@ function VideoIntroHero(){
 /* ─── NAV ─── */
 function Nav(){const[s,setS]=useState(false);useEffect(()=>{const fn=()=>setS(window.scrollY>100);window.addEventListener("scroll",fn,{passive:true});return()=>window.removeEventListener("scroll",fn)},[]);return(
 <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:9999,padding:"24px 8vw",display:"flex",justifyContent:"space-between",alignItems:"center",background:s?`${C.ice}F0`:"transparent",backdropFilter:s?"blur(28px) saturate(1.3)":"none",borderBottom:s?`1px solid ${C.mist}30`:"1px solid transparent",transition:"all 0.6s ease"}}>
-<a href="#" style={{display:"flex",alignItems:"center"}}><img src="/infinity-logo.png" alt="Infinity Water" style={{height:32,width:"auto",objectFit:"contain"}} /></a>
+<Link href="/" style={{display:"flex",alignItems:"center"}}><Image src="/infinity-logo.png" alt="Infinity Water" width={150} height={50} style={{height:32,width:"auto",objectFit:"contain"}} /></Link>
 <div style={{display:"flex",gap:36,alignItems:"center"}}>
-{["Collections","Origin","Lifestyle"].map(i=>(<a key={i} href={`#${i.toLowerCase()}`} className="nav-link-hide" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.deep:C.frost,textDecoration:"none",opacity:0.5,transition:"all 0.3s ease"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.5"}}>{i}</a>))}
-<a href="/connect" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.ice:C.void,background:s?C.deep:C.gold,padding:"9px 24px",textDecoration:"none",transition:"all 0.4s ease"}}>Partner</a>
+{[["About","/about"],["Collections","/collections"],["Hospitality","/hospitality"],["Wholesale","/wholesale"],["Quality","/quality"]].map(([label,href])=>(<Link key={href} href={href} className="nav-link-hide" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.deep:C.frost,textDecoration:"none",opacity:0.5,transition:"all 0.3s ease"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.5"}}>{label}</Link>))}
+<Link href="/forms" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.ice:C.void,background:s?C.deep:C.gold,padding:"9px 24px",textDecoration:"none",transition:"all 0.4s ease"}}>Partner</Link>
 </div></nav>)}
 
 /* ─── HERO PRODUCT ─── */
@@ -277,7 +278,7 @@ function Footer(){return(
 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:28}}>
 <div><div style={{marginBottom:14}}><img src="/infinity-logo.png" alt="Infinity Water" style={{height:36,width:"auto",objectFit:"contain"}} /></div>
 <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:C.frost,opacity:0.2}}>© 2026 Infinity Water · Belgium · A Kollective Hospitality Group Brand</div></div>
-<div style={{display:"flex",gap:32}}>{["Instagram","Press","Legal"].map(l=>(<a key={l} href="#" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.18em",textTransform:"uppercase",color:C.frost,textDecoration:"none",opacity:0.25,transition:"opacity 0.3s"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.25"}}>{l}</a>))}</div>
+<div style={{display:"flex",gap:32}}>{[["About","/about"],["Quality","/quality"],["FAQ","/faq"],["Contact","/forms"]].map(([label,href])=>(<Link key={href} href={href} style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.18em",textTransform:"uppercase",color:C.frost,textDecoration:"none",opacity:0.45,transition:"opacity 0.3s"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.45"}}>{label}</Link>))}</div>
 </div></footer>)}
 
 /* ─── MAIN ─── */
