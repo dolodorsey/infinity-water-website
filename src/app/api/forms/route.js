@@ -1,136 +1,158 @@
 import { NextResponse } from 'next/server';
 
-/**
- * POST /api/forms
- * Universal KHG Form Submission Handler
- * Upserts contact into GHL via PIT token, adds notes, logs to Supabase
- * Env vars required: GHL_PIT_TOKEN, GHL_LOCATION_ID, NEXT_PUBLIC_BRAND_KEY
- */
-
+const BRAND_KEY = 'infinity';
+const BRAND_NAME = 'Infinity Water';
 const GHL_API = 'https://services.leadconnectorhq.com';
+
+function clean(value, max = 5000) {
+  return typeof value === 'string' ? value.trim().slice(0, max) : '';
+}
+
+function formDetails(formType, fields) {
+  const lines = Object.entries(fields || {})
+    .filter(([, value]) => value !== '' && value !== null && value !== undefined)
+    .map(([key, value]) => `${key.replaceAll('_', ' ')}: ${String(value)}`);
+  return [`[${formType}]`, ...lines].join('\n').slice(0, 5000);
+}
+
+async function storeLead({ formType, name, email, phone, source, fields }) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, '');
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    throw new Error('Lead storage is not configured');
+  }
+
+  const date = new Date().toISOString().slice(0, 10).replaceAll('-', '');
+  const reference = `INFINITY-${date}-${crypto.randomUUID().replaceAll('-', '').slice(0, 10).toUpperCase()}`;
+  const organization = clean(
+    fields.organization || fields.business_name || fields.company || fields.company_name,
+    200
+  );
+
+  const response = await fetch(`${url}/rest/v1/quote_requests`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify({
+      brand_key: BRAND_KEY,
+      inquiry_type: formType,
+      name,
+      email,
+      phone: phone || null,
+      organization: organization || null,
+      details: formDetails(formType, fields),
+      reference,
+      workflow_status: 'submitted',
+      consent_at: new Date().toISOString(),
+      source_page: source || `${BRAND_NAME} Website`,
+      utm: {},
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    const error = new Error(/rate limit|too many/i.test(message) ? 'rate_limit' : 'storage_failed');
+    error.cause = message;
+    throw error;
+  }
+
+  return reference;
+}
+
+async function syncOptionalCrm({ formType, name, email, phone, fields }) {
+  const pitToken = process.env.GHL_PIT_TOKEN;
+  const locationId = process.env.GHL_LOCATION_ID;
+  if (!pitToken || !locationId) return false;
+
+  const [firstName = '', ...lastNameParts] = name.split(/\s+/);
+  const contactResponse = await fetch(`${GHL_API}/contacts/upsert`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${pitToken}`,
+      Version: '2021-07-28',
+    },
+    body: JSON.stringify({
+      firstName,
+      lastName: lastNameParts.join(' '),
+      email,
+      phone: phone || undefined,
+      locationId,
+      source: `${BRAND_NAME}: ${formType.replaceAll('_', ' ')}`,
+      tags: [`form_${formType}`, 'website_form', BRAND_KEY],
+    }),
+  });
+
+  if (!contactResponse.ok) return false;
+  const contact = await contactResponse.json();
+  const contactId = contact?.contact?.id;
+  if (!contactId) return true;
+
+  await fetch(`${GHL_API}/contacts/${contactId}/notes`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${pitToken}`,
+      Version: '2021-07-28',
+    },
+    body: JSON.stringify({ body: formDetails(formType, fields) }),
+  });
+  return true;
+}
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { formType, name, email, phone, source, fields = {} } = body;
+    const formType = clean(body.formType || body.form_type, 80);
+    const name = clean(body.name || body.full_name, 120);
+    const email = clean(body.email, 254).toLowerCase();
+    const phone = clean(body.phone, 50);
+    const source = clean(body.source, 500);
+    const fields = body.fields || body.form_data || {};
 
-    if (!formType || !name || !email) {
+    if (clean(fields.company_website, 200)) {
+      return NextResponse.json({ success: true });
+    }
+    if (
+      formType.length < 2 ||
+      name.length < 2 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields: formType, name, email' },
+        { success: false, error: 'Please provide a valid form type, name, and email.' },
         { status: 400 }
       );
     }
 
-    const pitToken = process.env.GHL_PIT_TOKEN;
-    const locationId = process.env.GHL_LOCATION_ID;
-
-    if (!pitToken || !locationId) {
-      console.error('Missing GHL_PIT_TOKEN or GHL_LOCATION_ID');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    const formTag = `form_${formType}`;
-    const timestamp = new Date().toISOString();
-    const notesLines = [
-      `=== ${formType.toUpperCase().replace(/_/g, ' ')} SUBMISSION ===`,
-      `Submitted: ${timestamp}`,
-      `Source: ${source || 'Website'}`,
-      '',
-      ...Object.entries(fields).map(([k, v]) => `${k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}: ${v}`),
-    ];
-    const notesText = notesLines.join('\n');
-
-    const nameParts = name.trim().split(/\s+/);
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
-
-    const contactPayload = {
-      firstName,
-      lastName,
-      email,
-      phone: phone || undefined,
-      locationId,
-      source: `KHG Form: ${formType.replace(/_/g, ' ')}`,
-      tags: [formTag, 'website_form', `form_${timestamp.split('T')[0]}`],
-    };
-    Object.keys(contactPayload).forEach(k => {
-      if (contactPayload[k] === undefined) delete contactPayload[k];
-    });
-
-    const contactRes = await fetch(`${GHL_API}/contacts/upsert`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${pitToken}`,
-        'Version': '2021-07-28',
-      },
-      body: JSON.stringify(contactPayload),
-    });
-
-    let contactId = null;
-    if (contactRes.ok) {
-      const contactData = await contactRes.json();
-      contactId = contactData?.contact?.id;
-
-      if (contactId) {
-        try {
-          await fetch(`${GHL_API}/contacts/${contactId}/notes`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${pitToken}`,
-              'Version': '2021-07-28',
-            },
-            body: JSON.stringify({ body: notesText }),
-          });
-        } catch (noteErr) {
-          console.error('Failed to add note:', noteErr);
-        }
-      }
-    } else {
-      console.error('GHL contact upsert failed:', contactRes.status);
-    }
-
-    // Log to Supabase (fire and forget)
-    logSubmission(formType, email, locationId, contactId).catch(() => {});
+    const reference = await storeLead({ formType, name, email, phone, source, fields });
+    const crmSynced = await syncOptionalCrm({ formType, name, email, phone, fields }).catch(
+      () => false
+    );
 
     return NextResponse.json({
       success: true,
-      message: 'Form submitted successfully. Our team will be in touch.',
-      contactId,
+      message: 'Received. Our sales team will be in touch.',
+      reference,
+      crmSynced,
     });
-  } catch (err) {
-    console.error('Form API error:', err);
+  } catch (error) {
+    const rateLimited = error?.message === 'rate_limit';
+    console.error('Form submission failed:', error?.message || error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        success: false,
+        error: rateLimited
+          ? 'We received several requests recently. Please try again later.'
+          : 'We could not save your request. Please try again.',
+      },
+      { status: rateLimited ? 429 : 500 }
     );
   }
-}
-
-async function logSubmission(formType, email, locationId, contactId) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
-  if (!supabaseUrl || !supabaseKey) return;
-
-  await fetch(`${supabaseUrl}/rest/v1/form_submissions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-      Prefer: 'return=minimal',
-    },
-    body: JSON.stringify({
-      form_type: formType,
-      email,
-      location_id: locationId,
-      ghl_contact_id: contactId,
-      brand_key: process.env.NEXT_PUBLIC_BRAND_KEY,
-      submitted_at: new Date().toISOString(),
-    }),
-  });
 }
