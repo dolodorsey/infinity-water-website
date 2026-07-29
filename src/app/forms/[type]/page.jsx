@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useRef, useState, use } from 'react';
 import Image from 'next/image';
 
 const BRAND = { name: 'Infinity Water', bg: '#060D14', accent: '#4FC3F7', text: '#E8F4FD', font: "'DM Sans', sans-serif" };
@@ -160,7 +160,8 @@ function FormsIndex(){
   );
 }
 
-export default function FormPage({params}) {
+export default function FormPage(props) {
+  const params = use(props.params);
   const type=params?.type;
   const form=FORMS[type];
   const [data,setData]=useState({});
