@@ -145,13 +145,13 @@ async function persistSubmission({ formType, name, email, phone, source, fields,
     return false;
   }
 
-  const response = await fetch(`${supabaseUrl}/rest/v1/quote_requests?on_conflict=reference`, {
+  const response = await fetch(`${supabaseUrl}/rest/v1/quote_requests`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,
-      Prefer: 'resolution=ignore-duplicates,return=minimal',
+      Prefer: 'return=minimal',
     },
     body: JSON.stringify({
       brand_key: 'infinity',
