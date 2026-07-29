@@ -3,10 +3,77 @@ import Link from 'next/link';
 import styles from './EditorialPage.module.css';
 import { sitePages, siteProfile } from '@/lib/site-pages';
 
+const pageVisuals = {
+  about: {
+    eyebrow: 'DESIGNED FOR ARRIVAL',
+    title: 'The bottle changes with the room. The standard does not.',
+    items: [
+      ['/luxury-hotel.png', 'Hospitality', 'A guest-facing object for suites, tables, and welcome rituals.'],
+      ['/luxury-jet.png', 'Travel', 'A premium presentation for private aviation and transport.'],
+      ['/lifestyle-club.png', 'Culture', 'A bottle designed to belong inside visible service moments.'],
+    ],
+  },
+  collections: {
+    eyebrow: 'THE COLLECTION WALL',
+    title: 'Three distinct moods. One coordinated silhouette.',
+    items: [
+      ['/gold-trio.png', 'Gold', 'Formal sparkle, ceremony, and visible bottle service.'],
+      ['/blue-trio.png', 'Blue', 'Cool still-water presentation for hospitality and travel.'],
+      ['/black-trio.png', 'Black', 'High-contrast energy for nightlife, gifting, and performance spaces.'],
+    ],
+  },
+  hospitality: {
+    eyebrow: 'SERVICE WORLDS',
+    title: 'Begin with where the guest meets the bottle.',
+    items: [
+      ['/luxury-hotel.png', 'Property', 'Suites, minibars, restaurants, conference, and gifting.'],
+      ['/luxury-yacht.png', 'Journey', 'Yacht, aviation, and premium transport service.'],
+      ['/luxury-jetbucket.png', 'Ritual', 'Presentation, storage, replenishment, and handoff as one program.'],
+    ],
+  },
+  wholesale: {
+    eyebrow: 'MARKET READINESS',
+    title: 'A collection has to work beyond the campaign image.',
+    items: [
+      ['/gallery-lineup.png', 'Shelf presence', 'A coordinated family with a clear collection story.'],
+      ['/v-formation.png', 'Channel planning', 'Territory, account reach, delivery, and launch support.'],
+      ['/five-bottles.png', 'Replenishment', 'Recurring demand planned against real operating capability.'],
+    ],
+  },
+  quality: {
+    eyebrow: 'EVIDENCE BEFORE LANGUAGE',
+    title: 'The product record governs the product claim.',
+    items: [
+      ['/gold-ice.png', 'Identity', 'Lifestyle and visual positioning belong to the brand layer.'],
+      ['/gold-splash.png', 'Specification', 'Measurable language belongs to current technical records.'],
+      ['/gallery-studio.png', 'Control', 'The quoted item, market, and production run define the evidence.'],
+    ],
+  },
+  events: {
+    eyebrow: 'THE PRODUCTION CANVAS',
+    title: 'Hydration becomes part of the show—not an afterthought.',
+    items: [
+      ['/lifestyle-festival.png', 'Audience', 'Guest count, service areas, consumption, and timing.'],
+      ['/lifestyle-picnic.png', 'Experience', 'Placement, gifting, talent, suites, and partner moments.'],
+      ['/lifestyle-club.png', 'Rights', 'Supply, sponsorship, content, and exclusivity reviewed separately.'],
+    ],
+  },
+  faq: {
+    eyebrow: 'THE DECISION DESK',
+    title: 'Six questions. Six direct routes to the truth.',
+    items: [
+      ['/all-bottles.png', 'Product', 'Finish and format availability are confirmed per request.'],
+      ['/cool-lineup.png', 'Account', 'Samples and pricing follow commercial qualification.'],
+      ['/spiral-grid.png', 'Program', 'Custom, event, and distribution scopes require separate review.'],
+    ],
+  },
+};
+
 export function EditorialPage({ page, slug }) {
   const related = Object.entries(sitePages)
     .filter(([key]) => key !== slug)
     .slice(0, 3);
+  const visual = pageVisuals[slug];
 
   return (
     <div
@@ -47,10 +114,30 @@ export function EditorialPage({ page, slug }) {
           ))}
         </section>
 
+        {visual ? (
+          <section className={`${styles.visualStory} ${styles[`visualStory_${slug}`]}`}>
+            <header>
+              <p>{visual.eyebrow}</p>
+              <h2>{visual.title}</h2>
+            </header>
+            <div>
+              {visual.items.map(([src, label, description], index) => (
+                <article key={src}>
+                  <div>
+                    <Image src={src} alt="" fill sizes="(max-width: 720px) 100vw, 33vw" />
+                  </div>
+                  <span>{String(index + 1).padStart(2, '0')} / {label}</span>
+                  <p>{description}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section className={styles.reading}>
           <header>
             <p>INFORMATION BRIEF</p>
-            <h2>What you should know.</h2>
+            <h2>{page.title}</h2>
           </header>
           <div className={styles.sections}>
             {page.sections.map((section, index) => (
