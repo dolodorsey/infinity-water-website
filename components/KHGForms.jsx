@@ -443,7 +443,7 @@ function FormModal({ formType, brandKey, onClose }) {
                 Submitted
               </h3>
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 32 }}>
-                We'll be in touch soon.
+                We&apos;ll be in touch soon.
               </p>
               <button onClick={onClose} style={{
                 padding: '12px 32px', background: 'var(--accent, #FF6B35)',

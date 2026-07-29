@@ -32,6 +32,10 @@ function VideoIntroHero(){
   const[scrollY,setScrollY]=useState(0);
 
   useEffect(()=>{
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPhase(3);
+      return;
+    }
     const t1=setTimeout(()=>setPhase(1),1800);
     const t2=setTimeout(()=>setPhase(2),2800);
     const t3=setTimeout(()=>setPhase(3),3400);
@@ -48,6 +52,7 @@ function VideoIntroHero(){
       opacity:phase>=3?0:1,transition:"opacity 0.8s cubic-bezier(0.16,1,0.3,1)",
       pointerEvents:phase>=3?"none":"all"
     }}>
+      <button type="button" onClick={()=>setPhase(3)} style={{position:"absolute",zIndex:2,top:24,right:24,padding:"10px 14px",border:`1px solid ${C.gold}55`,background:`${C.void}99`,color:C.ice,fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.16em",textTransform:"uppercase",cursor:"pointer"}}>Skip intro</button>
       <div style={{
         width:"100vw",
         height:"100vh",
@@ -59,7 +64,7 @@ function VideoIntroHero(){
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",opacity:phase>=2?0:1,transition:"opacity 0.5s ease"}}>
           <div style={{textAlign:"center"}}>
             <div style={{width:2,height:phase>=1?40:0,background:`linear-gradient(180deg,transparent,${C.gold})`,margin:"0 auto 20px",transition:"height 1s cubic-bezier(0.16,1,0.3,1)",borderRadius:1}}/>
-            <img src="/infinity-logo.png" alt="Infinity Water" style={{height:"clamp(100px,20vw,200px)",width:"auto",objectFit:"contain",opacity:phase>=1?0:1,transition:"opacity 0.5s ease 0.4s"}} />
+            <Image src="/infinity-logo.png" alt="Infinity Water" width={1200} height={1200} priority style={{height:"clamp(100px,20vw,200px)",width:"auto",objectFit:"contain",opacity:phase>=1?0:1,transition:"opacity 0.5s ease 0.4s"}} />
           </div>
         </div>
       </div>
@@ -68,7 +73,7 @@ function VideoIntroHero(){
     </div>
 
     {/* HERO — video is now BG */}
-    <section
+    <section id="main-content"
       onMouseMove={e=>setMouse({x:e.clientX/window.innerWidth,y:e.clientY/window.innerHeight})}
       style={{height:"100vh",position:"relative",overflow:"hidden",background:C.void,cursor:"crosshair"}}
     >
@@ -115,7 +120,7 @@ function VideoIntroHero(){
 /* ─── NAV ─── */
 function Nav(){const[s,setS]=useState(false);useEffect(()=>{const fn=()=>setS(window.scrollY>100);window.addEventListener("scroll",fn,{passive:true});return()=>window.removeEventListener("scroll",fn)},[]);return(
 <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:9999,padding:"24px 8vw",display:"flex",justifyContent:"space-between",alignItems:"center",background:s?`${C.ice}F0`:"transparent",backdropFilter:s?"blur(28px) saturate(1.3)":"none",borderBottom:s?`1px solid ${C.mist}30`:"1px solid transparent",transition:"all 0.6s ease"}}>
-<a href="#" style={{display:"flex",alignItems:"center"}}><img src="/infinity-logo.png" alt="Infinity Water" style={{height:32,width:"auto",objectFit:"contain"}} /></a>
+<a href="#main-content" style={{display:"flex",alignItems:"center"}}><Image src="/infinity-logo.png" alt="Infinity Water" width={1200} height={1200} style={{height:32,width:"auto",objectFit:"contain"}} /></a>
 <div style={{display:"flex",gap:36,alignItems:"center"}}>
 {["Collections","Origin","Lifestyle"].map(i=>(<a key={i} href={`#${i.toLowerCase()}`} className="nav-link-hide" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.deep:C.frost,textDecoration:"none",opacity:0.5,transition:"all 0.3s ease"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.5"}}>{i}</a>))}
 <a href="#order" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:s?C.ice:C.void,background:s?C.deep:C.gold,padding:"9px 24px",textDecoration:"none",transition:"all 0.4s ease"}}>Order</a>
@@ -258,50 +263,38 @@ function GalleryStudio(){return(
 </div></R><div style={{height:84}}/></section>)}
 
 /* ─── CONVERSION ─── */
-function Conversion(){const[email,setEmail]=useState("");const[done,setDone]=useState(false);return(
+function Conversion(){return(
 <section id="order" style={{minHeight:"80vh",background:C.void,display:"flex",alignItems:"center",position:"relative",overflow:"hidden"}}>
 <div style={{position:"absolute",inset:0,opacity:0.06,WebkitMaskImage:"radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)",maskImage:"radial-gradient(ellipse 75% 70% at 50% 50%, black 30%, transparent 100%)"}}><Image src="/gold-ice.png" alt="" fill style={{objectFit:"cover"}}/></div>
 <div style={{padding:"100px 8vw",position:"relative",zIndex:1}}>
 <R><h2 style={{fontFamily:"'Cormorant',serif",fontSize:"clamp(52px,12vw,180px)",fontWeight:300,lineHeight:0.86,letterSpacing:"-0.05em",color:C.ice,margin:"0 0 52px"}}>Enter<br/><em style={{color:C.gold}}>Infinity.</em></h2></R>
 <R delay={0.15}><div style={{maxWidth:520}}>
-<p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:300,lineHeight:1.75,color:C.frost,opacity:0.45,marginBottom:44}}>First access to new collections. Partner announcements. Invitations.</p>
-{!done?(<div style={{display:"flex",border:`1px solid ${C.faint}`,background:`${C.faint}40`}}>
-<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" style={{flex:1,padding:"20px 28px",fontFamily:"'DM Mono',monospace",fontSize:13,fontWeight:300,border:"none",outline:"none",background:"transparent",color:C.ice,letterSpacing:"0.03em"}}/>
-<button onClick={()=>email&&setDone(true)} style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.22em",textTransform:"uppercase",padding:"20px 36px",background:C.gold,color:C.void,border:"none",cursor:"pointer",transition:"background 0.3s"}} onMouseEnter={e=>{(e.target as HTMLElement).style.background=C.ice}} onMouseLeave={e=>{(e.target as HTMLElement).style.background=C.gold}}>Join</button>
-</div>):(<div style={{fontFamily:"'Cormorant',serif",fontSize:30,fontWeight:300,fontStyle:"italic",color:C.gold}}>Welcome to Infinity.</div>)}
+<p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:300,lineHeight:1.75,color:C.frost,opacity:0.55,marginBottom:34}}>For private orders, hospitality placements, events, and distribution, tell us where Infinity belongs next.</p>
+<div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
+<a href="/forms/inquiry?interest=private-order" style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.18em",textTransform:"uppercase",textDecoration:"none",padding:"18px 28px",background:C.gold,color:C.void}}>Request Infinity</a>
+<a href="/forms/group_pricing?interest=trade" style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.18em",textTransform:"uppercase",textDecoration:"none",padding:"18px 28px",border:`1px solid ${C.gold}55`,color:C.gold}}>Trade & Hospitality</a>
+</div>
 </div></R></div></section>)}
 
 /* ─── FOOTER ─── */
 function Footer(){return(
 <footer style={{background:C.void,padding:"72px 8vw 52px",borderTop:`1px solid ${C.faint}`}}>
 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:28}}>
-<div><div style={{marginBottom:14}}><img src="/infinity-logo.png" alt="Infinity Water" style={{height:36,width:"auto",objectFit:"contain"}} /></div>
+<div><div style={{marginBottom:14}}><Image src="/infinity-logo.png" alt="Infinity Water" width={1200} height={1200} style={{height:36,width:"auto",objectFit:"contain"}} /></div>
 <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:C.frost,opacity:0.2}}>© 2026 Infinity Water · Belgium · A Kollective Hospitality Group Brand</div></div>
-<div style={{display:"flex",gap:32}}>{["Instagram","Press","Legal"].map(l=>(<a key={l} href="#" style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.18em",textTransform:"uppercase",color:C.frost,textDecoration:"none",opacity:0.25,transition:"opacity 0.3s"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.25"}}>{l}</a>))}</div>
+<div style={{display:"flex",gap:32}}>{[
+{label:"Private Orders",href:"/forms/inquiry?interest=private-order"},
+{label:"Hospitality",href:"/forms/group_pricing?interest=hospitality"},
+{label:"Distribution",href:"/forms/group_pricing?interest=distribution"},
+{label:"Privacy",href:"/privacy"},
+{label:"Terms",href:"/terms"},
+{label:"Contact",href:"/contact"},
+].map(l=>(<a key={l.label} href={l.href} style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.18em",textTransform:"uppercase",color:C.frost,textDecoration:"none",opacity:0.4,transition:"opacity 0.3s"}} onMouseEnter={e=>{(e.target as HTMLElement).style.opacity="1"}} onMouseLeave={e=>{(e.target as HTMLElement).style.opacity="0.4"}}>{l.label}</a>))}</div>
 </div></footer>)}
 
 /* ─── MAIN ─── */
 export default function HomePage(){return(
 <main style={{overflowX:"hidden"}}>
-<style>{`
-@media(max-width:900px){
-.collections-grid,.lifestyle-grid{grid-template-columns:1fr!important}
-.hero-prod-grid,.origin-grid{grid-template-columns:1fr!important}
-div[style*="grid-template-columns: 1fr 1fr 1fr"]{grid-template-columns:1fr!important}
-h1{font-size:52px!important}
-.nav-link-hide{display:none}
-}
-
-@media(max-width:768px){
-  .dg,.DG,[style*="gridTemplateColumns"]{grid-template-columns:1fr!important}
-  .nl,.desktop-nav{display:none!important}
-  .fg,.stat-grid,.feature-grid{grid-template-columns:1fr!important}
-  .eg{grid-template-columns:1fr!important}
-  h1,h2,.hero-title{word-break:break-word}
-  nav{padding:16px!important}
-  section{padding-left:16px!important;padding-right:16px!important}
-}
-`}</style>
 <Grain/>
 <CursorGlow/>
 <Nav/>

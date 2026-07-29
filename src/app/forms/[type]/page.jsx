@@ -1,10 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import Image from 'next/image';
 
-const BRAND_KEY = 'infinity_water';
 const BRAND = { name: 'Infinity Water', bg: '#060D14', accent: '#4FC3F7', text: '#E8F4FD', font: "'DM Sans', sans-serif" };
-const WEBHOOK = 'https://dorsey.app.n8n.cloud/webhook/khg-form-submit';
 const BG_IMG = '/images/forms-bg.png';
+const PUBLIC_FORM_KEYS = ['inquiry', 'group_pricing'];
 
 const FORMS = {
   vendor:{title:'Vendor Application',sub:'Join our vendor network',icon:'🏪',cat:'Business',fields:[
@@ -80,23 +80,24 @@ const CATS = ['Events','Creative','Business','Team','General'];
 const CAT_ICONS = {Events:'🎪',Creative:'🎨',Business:'💼',Team:'👥',General:'📋'};
 
 function Input({field:f,value:v,onChange:c,brand:b}){
+  const id=`field-${f.n}`;
   const base={width:'100%',padding:'14px 16px',background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.18)',borderRadius:8,color:'#fff',fontSize:15,fontFamily:"'DM Sans',sans-serif",outline:'none',boxSizing:'border-box',backdropFilter:'blur(8px)',transition:'border-color 0.3s'};
   const focus=e=>e.target.style.borderColor=b.accent+'80';
   const blur=e=>e.target.style.borderColor='rgba(255,255,255,0.18)';
-  if(f.t==='textarea')return<textarea name={f.n} required={f.r} rows={4} value={v||''} onChange={e=>c(f.n,e.target.value)} style={{...base,resize:'vertical'}} onFocus={focus} onBlur={blur}/>;
-  if(f.t==='select')return<select name={f.n} required={f.r} value={v||''} onChange={e=>c(f.n,e.target.value)} style={{...base,color:v?'#fff':'rgba(255,255,255,0.6)',cursor:'pointer',appearance:'none'}}><option value="" style={{background:'#111'}}>Select...</option>{(f.o||[]).map(o=><option key={o} value={o} style={{background:'#111',color:'#fff'}}>{o}</option>)}</select>;
-  if(f.t==='checkbox')return<label style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',fontSize:14,fontFamily:"'DM Sans',sans-serif",lineHeight:1.5,color:'rgba(255,255,255,0.95)'}}><input type="checkbox" name={f.n} required={f.r} checked={v||false} onChange={e=>c(f.n,e.target.checked)} style={{marginTop:3,accentColor:b.accent,width:18,height:18,flexShrink:0}}/>{f.l}</label>;
-  return<input type={f.t} name={f.n} required={f.r} value={v||''} onChange={e=>c(f.n,e.target.value)} style={base} onFocus={focus} onBlur={blur}/>;
+  if(f.t==='textarea')return<textarea id={id} name={f.n} required={f.r} rows={4} value={v||''} onChange={e=>c(f.n,e.target.value)} style={{...base,resize:'vertical'}} onFocus={focus} onBlur={blur}/>;
+  if(f.t==='select')return<select id={id} name={f.n} required={f.r} value={v||''} onChange={e=>c(f.n,e.target.value)} style={{...base,color:v?'#fff':'rgba(255,255,255,0.6)',cursor:'pointer',appearance:'none'}}><option value="" style={{background:'#111'}}>Select...</option>{(f.o||[]).map(o=><option key={o} value={o} style={{background:'#111',color:'#fff'}}>{o}</option>)}</select>;
+  if(f.t==='checkbox')return<label htmlFor={id} style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',fontSize:14,fontFamily:"'DM Sans',sans-serif",lineHeight:1.5,color:'rgba(255,255,255,0.95)'}}><input id={id} type="checkbox" name={f.n} required={f.r} checked={v||false} onChange={e=>c(f.n,e.target.checked)} style={{marginTop:3,accentColor:b.accent,width:18,height:18,flexShrink:0}}/>{f.l}</label>;
+  return<input id={id} type={f.t} name={f.n} required={f.r} value={v||''} onChange={e=>c(f.n,e.target.value)} style={base} onFocus={focus} onBlur={blur}/>;
 }
 
 function FormsIndex(){
   const [filter,setFilter]=useState('All');
-  const filtered=Object.entries(FORMS).filter(([,f])=>filter==='All'||f.cat===filter);
+  const filtered=Object.entries(FORMS).filter(([key,f])=>PUBLIC_FORM_KEYS.includes(key)&&(filter==='All'||f.cat===filter));
   return(
-    <div style={{minHeight:'100vh',position:'relative',overflow:'hidden'}}>
+    <div id="main-content" role="main" style={{minHeight:'100vh',position:'relative',overflow:'hidden'}}>
       {/* Background */}
       <div style={{position:'fixed',inset:0,zIndex:0}}>
-        <img src={BG_IMG} alt="" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center'}}/>
+        <Image src={BG_IMG} alt="" fill sizes="100vw" style={{objectFit:'cover',objectPosition:'center'}}/>
         <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.8) 100%)'}}/>
       </div>
       {/* Grain */}
@@ -159,22 +160,28 @@ function FormsIndex(){
   );
 }
 
-export default function FormPage({params}){
+export default function FormPage({params}) {
   const type=params?.type;
   const form=FORMS[type];
   const [data,setData]=useState({});
   const [status,setStatus]=useState('idle');
+  const receiptRef=useRef(globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`);
   const set=(n,v)=>setData(p=>({...p,[n]:v}));
   const submit=async(e)=>{
     e.preventDefault();setStatus('submitting');
-    try{await fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({brand_key:BRAND_KEY,form_type:type,full_name:data.full_name||'',email:data.email||'',phone:data.phone||'',form_data:data,source:'standalone_form',submitted_at:new Date().toISOString()})});setStatus('success');}catch{setStatus('error');}
+    try{
+      const intent=new URLSearchParams(window.location.search).get('interest')||'general';
+      const response=await fetch('/api/forms',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':receiptRef.current},body:JSON.stringify({formType:type,name:data.full_name||'',email:data.email||'',phone:data.phone||'',source:`website_${intent}`,fields:{...data,intent},website:data.website||'',consent:data.privacy_consent===true,requestId:receiptRef.current})});
+      if(!response.ok) throw new Error(`Submission failed with status ${response.status}`);
+      setStatus('success');
+    }catch{setStatus('error');}
   };
 
-  if(!form) return <FormsIndex/>;
+  if(!form||!PUBLIC_FORM_KEYS.includes(type)) return <FormsIndex/>;
 
   if(status==='success') return(
-    <div style={{minHeight:'100vh',position:'relative',overflow:'hidden'}}>
-      <div style={{position:'fixed',inset:0,zIndex:0}}><img src={BG_IMG} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/><div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.75)'}}/></div>
+    <div id="main-content" role="main" style={{minHeight:'100vh',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'fixed',inset:0,zIndex:0}}><Image src={BG_IMG} alt="" fill sizes="100vw" style={{objectFit:'cover'}}/><div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.75)'}}/></div>
       <div style={{position:'relative',zIndex:2,display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
         <div style={{textAlign:'center',maxWidth:480}}>
           <div style={{width:72,height:72,borderRadius:'50%',border:`2px solid ${BRAND.accent}`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px',fontSize:32,color:BRAND.accent}}>✓</div>
@@ -187,10 +194,10 @@ export default function FormPage({params}){
   );
 
   return(
-    <div style={{minHeight:'100vh',position:'relative',overflow:'hidden'}}>
+    <div id="main-content" role="main" style={{minHeight:'100vh',position:'relative',overflow:'hidden'}}>
       {/* Background */}
       <div style={{position:'fixed',inset:0,zIndex:0}}>
-        <img src={BG_IMG} alt="" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center'}}/>
+        <Image src={BG_IMG} alt="" fill sizes="100vw" style={{objectFit:'cover',objectPosition:'center'}}/>
         <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.65) 50%, rgba(0,0,0,0.85) 100%)'}}/>
       </div>
       <div style={{position:'fixed',inset:0,opacity:0.03,pointerEvents:'none',zIndex:1,backgroundImage:`url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`}}/>
@@ -210,11 +217,13 @@ export default function FormPage({params}){
             <form onSubmit={submit}>
               <div style={{display:'flex',flexDirection:'column',gap:18}}>
                 {form.fields.map(f=><div key={f.n}>
-                  {f.t!=='checkbox'&&<label style={{display:'block',fontSize:11,letterSpacing:2,textTransform:'uppercase',marginBottom:8,color:'rgba(255,255,255,0.9)',fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>{f.l}{f.r?<span style={{color:BRAND.accent,marginLeft:4}}>*</span>:null}</label>}
+                  {f.t!=='checkbox'&&<label htmlFor={`field-${f.n}`} style={{display:'block',fontSize:11,letterSpacing:2,textTransform:'uppercase',marginBottom:8,color:'rgba(255,255,255,0.9)',fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>{f.l}{f.r?<span style={{color:BRAND.accent,marginLeft:4}}>*</span>:null}</label>}
                   <Input field={f} value={data[f.n]} onChange={set} brand={BRAND}/>
                 </div>)}
+                <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label htmlFor="website">Leave this field empty</label><input id="website" name="website" tabIndex={-1} autoComplete="off" value={data.website||''} onChange={e=>set('website',e.target.value)}/></div>
+                <label htmlFor="privacy-consent" style={{display:'flex',gap:12,alignItems:'flex-start',fontSize:13,lineHeight:1.6,color:'rgba(255,255,255,.78)',fontFamily:"'DM Sans',sans-serif"}}><input id="privacy-consent" type="checkbox" required checked={data.privacy_consent||false} onChange={e=>set('privacy_consent',e.target.checked)} style={{marginTop:4,width:18,height:18,accentColor:BRAND.accent}}/><span>I agree that Infinity Water may use this information to respond to my request, as described in the <a href="/privacy" style={{color:BRAND.accent}}>Privacy notice</a>.</span></label>
               </div>
-              {status==='error'&&<p style={{color:'#EF5350',fontSize:14,fontFamily:"'DM Sans',sans-serif",marginTop:16,textAlign:'center'}}>Something went wrong. Please try again.</p>}
+              {status==='error'&&<p role="alert" style={{color:'#EF5350',fontSize:14,fontFamily:"'DM Sans',sans-serif",marginTop:16,textAlign:'center'}}>We could not safely save your request. Please try again.</p>}
               <button type="submit" disabled={status==='submitting'} style={{width:'100%',marginTop:28,padding:'16px 32px',background:status==='submitting'?`${BRAND.accent}40`:BRAND.accent,color:'#000',border:'none',borderRadius:8,fontSize:13,fontWeight:600,letterSpacing:2,textTransform:'uppercase',fontFamily:"'DM Sans',sans-serif",cursor:status==='submitting'?'wait':'pointer',transition:'all 0.3s'}}>
                 {status==='submitting'?'Submitting...':'Submit'}
               </button>
