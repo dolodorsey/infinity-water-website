@@ -32,8 +32,14 @@ export default function KHGFormModal({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      setFormData({});
-      setStatus('idle');
+      const resetTimer = setTimeout(() => {
+        setFormData({});
+        setStatus('idle');
+      }, 0);
+      return () => {
+        clearTimeout(resetTimer);
+        document.body.style.overflow = '';
+      };
     } else {
       document.body.style.overflow = '';
     }

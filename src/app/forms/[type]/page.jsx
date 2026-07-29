@@ -166,13 +166,15 @@ export default function FormPage(props) {
   const form=FORMS[type];
   const [data,setData]=useState({});
   const [status,setStatus]=useState('idle');
-  const receiptRef=useRef(globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`);
+  const receiptRef=useRef(null);
   const set=(n,v)=>setData(p=>({...p,[n]:v}));
   const submit=async(e)=>{
     e.preventDefault();setStatus('submitting');
     try{
       const intent=new URLSearchParams(window.location.search).get('interest')||'general';
-      const response=await fetch('/api/forms',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':receiptRef.current},body:JSON.stringify({formType:type,name:data.full_name||'',email:data.email||'',phone:data.phone||'',source:`website_${intent}`,fields:{...data,intent},website:data.website||'',consent:data.privacy_consent===true,requestId:receiptRef.current})});
+      const requestId=receiptRef.current||globalThis.crypto.randomUUID();
+      receiptRef.current=requestId;
+      const response=await fetch('/api/forms',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':requestId},body:JSON.stringify({formType:type,name:data.full_name||'',email:data.email||'',phone:data.phone||'',source:`website_${intent}`,fields:{...data,intent},website:data.website||'',consent:data.privacy_consent===true,requestId})});
       if(!response.ok) throw new Error(`Submission failed with status ${response.status}`);
       setStatus('success');
     }catch{setStatus('error');}
