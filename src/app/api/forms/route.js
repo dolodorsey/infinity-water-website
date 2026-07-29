@@ -41,17 +41,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid submission' }, { status: 400 });
     }
 
-    const pitToken = process.env.GHL_PIT_TOKEN;
-    const locationId = process.env.GHL_LOCATION_ID;
-
-    if (!pitToken || !locationId) {
-      console.error('Missing GHL_PIT_TOKEN or GHL_LOCATION_ID');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
     const formTag = `form_${formType}`;
     const timestamp = new Date().toISOString();
     const durableReceipt = await persistSubmission({
@@ -63,6 +52,16 @@ export async function POST(request) {
         { status: 503 }
       );
     }
+    const pitToken = process.env.GHL_PIT_TOKEN;
+    const locationId = process.env.GHL_LOCATION_ID;
+    if (!pitToken || !locationId) {
+      console.error('Missing GHL_PIT_TOKEN or GHL_LOCATION_ID');
+      return NextResponse.json(
+        { error: 'Your request was saved, but delivery is delayed. Please try again or contact us directly.' },
+        { status: 503 }
+      );
+    }
+
     const notesLines = [
       `=== ${formType.toUpperCase().replace(/_/g, ' ')} SUBMISSION ===`,
       `Submitted: ${timestamp}`,
