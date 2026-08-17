@@ -57,6 +57,8 @@ const fallbackMembers: Member[] = [
   { section: "executive", name: "Bob", title: "Executive", sort_order: 130 },
   { section: "executive", name: "Omari", title: "Executive", sort_order: 140 },
   { section: "executive", name: "Weezy", title: "Executive", sort_order: 150 },
+  { section: "executive", name: "Kelz", title: "Executive", sort_order: 160 },
+  { section: "executive", name: "Alexis", title: "Executive", sort_order: 170 },
 ];
 
 function initials(name: string) {
