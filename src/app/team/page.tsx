@@ -29,7 +29,6 @@ const fallbackMembers: Member[] = [
   { section: "leadership", name: "David Walker", title: "CFO", sort_order: 40 },
   { section: "leadership", name: "Sarah Mitchell", title: "Chief Policy Officer", sort_order: 50 },
   { section: "leadership", name: "James Carter", title: "VP of Strategic Partnerships", sort_order: 60 },
-
   { section: "board", name: "Rick Wade", title: "Board Member", sort_order: 10 },
   { section: "board", name: "Bob Johnson", title: "Board Member", sort_order: 20 },
   { section: "board", name: "Coach Harris", title: "Board Member", sort_order: 30 },
@@ -41,7 +40,6 @@ const fallbackMembers: Member[] = [
   { section: "board", name: "Zen Dorsey", title: "Board Member", sort_order: 90 },
   { section: "board", name: "Joseph Siatta", title: "Board Member", sort_order: 100 },
   { section: "board", name: "Quintin", title: "Board Member", sort_order: 110 },
-
   { section: "executive", name: "JoJo", title: "Co-Chief Operating Officer, Enterprise Operations", sort_order: 10 },
   { section: "executive", name: "Quintin", title: "Co-Chief Operating Officer, Business Operations & Growth", sort_order: 20 },
   { section: "executive", name: "Sevant", title: "Chief Strategy & Activation Officer", sort_order: 30 },
@@ -62,34 +60,29 @@ const fallbackMembers: Member[] = [
   { section: "executive", name: "Kelz", title: "Executive", sort_order: 180 },
 ];
 
+const PEOPLE_ROOT = "https://dzlmtvodpyhetvektfuo.supabase.co/storage/v1/object/public/brand-graphics/app/backgrounds";
+const PEOPLE_BACKGROUNDS = Array.from({ length: 11 }, (_, index) => `${PEOPLE_ROOT}/app-background-${String(index + 1).padStart(2, "0")}.jpg`);
+
 function initials(name: string) {
-  return name
-    .replace(/\([^)]*\)/g, "")
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
+  return name.replace(/\([^)]*\)/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+}
+
+function imageFor(name: string) {
+  const score = Array.from(name).reduce((total, character) => total + character.charCodeAt(0), 0);
+  return PEOPLE_BACKGROUNDS[score % PEOPLE_BACKGROUNDS.length];
 }
 
 async function getMembers(): Promise<Member[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return fallbackMembers;
-
   try {
     const endpoint = new URL(`${url}/rest/v1/leadership_members`);
     endpoint.searchParams.set("brand_key", "eq.infinity");
     endpoint.searchParams.set("is_published", "eq.true");
     endpoint.searchParams.set("select", "id,section,name,title,bio,photo_url,photo_status,sort_order");
     endpoint.searchParams.set("order", "sort_order.asc,name.asc");
-
-    const response = await fetch(endpoint.toString(), {
-      headers: { apikey: key, Authorization: `Bearer ${key}` },
-      next: { revalidate: 60 },
-    });
-
+    const response = await fetch(endpoint.toString(), { headers: { apikey: key, Authorization: `Bearer ${key}` }, next: { revalidate: 60 } });
     if (!response.ok) return fallbackMembers;
     const data = (await response.json()) as Member[];
     return data.length ? data : fallbackMembers;
@@ -99,15 +92,20 @@ async function getMembers(): Promise<Member[]> {
 }
 
 function Portrait({ member, mini = false }: { member: Member; mini?: boolean }) {
+  const fallback = imageFor(member.name);
   return (
     <div className={`${styles.portrait} ${mini ? styles.portraitMini : ""}`}>
       {member.photo_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={member.photo_url} alt={member.name} />
       ) : (
-        <div className={styles.initials} aria-label={`${member.name} portrait placeholder`}>
+        <div
+          className={styles.peopleFallback}
+          aria-label={`${member.name} temporary people-photo placeholder`}
+          style={{ backgroundImage: `linear-gradient(180deg, rgba(5,18,30,.08), rgba(5,18,30,.18) 50%, rgba(5,18,30,.82)), url(${fallback})` }}
+        >
+          {!mini ? <small>TEMPORARY PORTRAIT</small> : null}
           <span>{initials(member.name)}</span>
-          {!mini ? <small>PORTRAIT PENDING</small> : null}
         </div>
       )}
     </div>
@@ -149,9 +147,7 @@ export default async function TeamPage() {
   return (
     <div className={styles.site}>
       <header className={styles.header}>
-        <Link href="/" className={styles.logo} aria-label="Infinity Water home">
-          <Image src={siteProfile.logo} alt={siteProfile.name} width={180} height={60} priority />
-        </Link>
+        <Link href="/" className={styles.logo} aria-label="Infinity Water home"><Image src={siteProfile.logo} alt={siteProfile.name} width={180} height={60} priority /></Link>
         <nav aria-label="Primary navigation">
           {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
           <Link href="/team" aria-current="page">Team</Link>
@@ -160,7 +156,7 @@ export default async function TeamPage() {
       </header>
 
       <main>
-        <section className={styles.hero}>
+        <section className={styles.hero} style={{ backgroundImage: `linear-gradient(90deg, rgba(4,18,31,.95), rgba(4,18,31,.70) 50%, rgba(4,18,31,.24)), url(${PEOPLE_BACKGROUNDS[2]})` }}>
           <div className={styles.heroInner}>
             <div className={styles.heroCopy}>
               <p>INFINITY WATER / LEADERSHIP</p>
@@ -176,59 +172,24 @@ export default async function TeamPage() {
         </section>
 
         <section className={styles.leadershipSection}>
-          <header className={styles.sectionIntro}>
-            <p>LEADERSHIP TEAM</p>
-            <h2>Experience at the top.</h2>
-            <span>Senior leadership guiding operations, engineering, finance, policy and strategic partnerships.</span>
-          </header>
-          <div className={styles.leadershipGrid}>
-            {leadership.map((member, index) => <LeadershipCard key={`${member.section}-${member.name}`} member={member} index={index} />)}
-          </div>
+          <header className={styles.sectionIntro}><p>LEADERSHIP TEAM</p><h2>Experience at the top.</h2><span>Senior leadership guiding operations, engineering, finance, policy and strategic partnerships.</span></header>
+          <div className={styles.leadershipGrid}>{leadership.map((member, index) => <LeadershipCard key={`${member.section}-${member.name}`} member={member} index={index} />)}</div>
         </section>
 
         <section className={styles.boardSection}>
-          <header className={styles.sectionIntro}>
-            <p>GOVERNANCE</p>
-            <h2>The Board.</h2>
-            <span>Institutional perspective, accountability and long-range stewardship.</span>
-          </header>
-          <div className={styles.boardList}>
-            {board.map((member, index) => (
-              <article key={`${member.section}-${member.name}`}>
-                <span className={styles.boardIndex}>{String(index + 1).padStart(2, "0")}</span>
-                <Portrait member={member} mini />
-                <div><h3>{member.name}</h3><p>{member.title || "Board Member"}</p></div>
-              </article>
-            ))}
-          </div>
+          <header className={styles.sectionIntro}><p>GOVERNANCE</p><h2>The Board.</h2><span>Institutional perspective, accountability and long-range stewardship.</span></header>
+          <div className={styles.boardList}>{board.map((member, index) => <article key={`${member.section}-${member.name}`}><span className={styles.boardIndex}>{String(index + 1).padStart(2, "0")}</span><Portrait member={member} mini /><div><h3>{member.name}</h3><p>{member.title || "Board Member"}</p></div></article>)}</div>
         </section>
 
         <section className={styles.executiveSection}>
-          <header className={styles.sectionIntro}>
-            <p>OPERATIONS & EXECUTION</p>
-            <h2>The team that makes it move.</h2>
-            <span>Cross-functional operators supporting enterprise execution across markets and initiatives.</span>
-          </header>
-          <div className={styles.executiveGrid}>
-            {executives.map((member) => <ExecutiveCard key={`${member.section}-${member.name}`} member={member} />)}
-          </div>
+          <header className={styles.sectionIntro}><p>OPERATIONS & EXECUTION</p><h2>The team that makes it move.</h2><span>Cross-functional operators supporting enterprise execution across markets and initiatives.</span></header>
+          <div className={styles.executiveGrid}>{executives.map((member) => <ExecutiveCard key={`${member.section}-${member.name}`} member={member} />)}</div>
         </section>
 
-        <section className={styles.cta}>
-          <p>PARTNERSHIPS · HOSPITALITY · DISTRIBUTION</p>
-          <h2>Build the next market with us.</h2>
-          <div><Link href="/forms">Start an inquiry</Link><Link href="/about">About Infinity</Link></div>
-        </section>
+        <section className={styles.cta}><p>PARTNERSHIPS · HOSPITALITY · DISTRIBUTION</p><h2>Build the next market with us.</h2><div><Link href="/forms">Start an inquiry</Link><Link href="/about">About Infinity</Link></div></section>
       </main>
 
-      <footer className={styles.footer}>
-        <strong>{siteProfile.name}</strong>
-        <nav>
-          {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
-          <Link href="/team">Team</Link>
-        </nav>
-        <span>© 2026 Infinity Water · A Kollective Hospitality Group Brand</span>
-      </footer>
+      <footer className={styles.footer}><strong>{siteProfile.name}</strong><nav>{siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}<Link href="/team">Team</Link></nav><span>© 2026 Infinity Water · A Kollective Hospitality Group Brand</span></footer>
     </div>
   );
 }
