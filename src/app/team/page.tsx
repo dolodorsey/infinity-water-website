@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +22,10 @@ type Member = {
   photo_status?: "placeholder" | "temporary" | "approved";
   sort_order?: number;
 };
+
+type PlaceholderAsset =
+  | { kind: "sprite"; index: number }
+  | { kind: "image"; url: string; position?: string };
 
 const fallbackMembers: Member[] = [
   { section: "leadership", name: "Bryan Dorsey", title: "Founder & CEO", bio: "Visionary entrepreneur and strategic leader focused on business development, partnerships, and scalable growth.", sort_order: 10 },
@@ -62,20 +67,80 @@ const fallbackMembers: Member[] = [
   { section: "executive", name: "Kelz", title: "Executive", sort_order: 180 },
 ];
 
-const GENERATED_PORTRAITS = [
-  "https://raw.githubusercontent.com/dolodorsey/dr-dorsey-website/main/public/team/placeholders/portrait-01.webp",
-  "https://raw.githubusercontent.com/dolodorsey/dr-dorsey-website/main/public/team/placeholders/portrait-04.webp",
-  "https://raw.githubusercontent.com/dolodorsey/dr-dorsey-website/main/public/team/placeholders/portrait-07.webp",
-  "https://raw.githubusercontent.com/dolodorsey/dr-dorsey-website/main/public/team/placeholders/portrait-10.webp",
-];
+const PEOPLE_ROOT = "https://dzlmtvodpyhetvektfuo.supabase.co/storage/v1/object/public/brand-graphics/app/backgrounds";
+const PEOPLE_BACKGROUNDS = Array.from({ length: 11 }, (_, index) => `${PEOPLE_ROOT}/app-background-${String(index + 1).padStart(2, "0")}.jpg`);
+const TEAM_SPRITE = "https://doctordorsey.com/team-placeholder-sprite";
+const DR_PLACEHOLDER_ROOT = "https://doctordorsey.com/team/placeholders";
+
+// Shared names use the same temporary visual as the enterprise sites. Infinity-only
+// names receive unused visuals so no two distinct people share one placeholder.
+const PLACEHOLDER_ASSETS: Record<string, PlaceholderAsset> = {
+  JoJo: { kind: "sprite", index: 0 },
+  Quintin: { kind: "sprite", index: 1 },
+  Sevant: { kind: "sprite", index: 2 },
+  Grayson: { kind: "sprite", index: 3 },
+  Hartley: { kind: "sprite", index: 4 },
+  Raven: { kind: "sprite", index: 5 },
+  Kay: { kind: "sprite", index: 6 },
+  Scrolls: { kind: "sprite", index: 7 },
+  Lackey: { kind: "sprite", index: 8 },
+  Alexis: { kind: "sprite", index: 9 },
+  "Coach Harris": { kind: "sprite", index: 10 },
+  "Bob Johnson": { kind: "sprite", index: 11 },
+  "Countryboy Dorsey": { kind: "sprite", index: 12 },
+  Suave: { kind: "sprite", index: 13 },
+  Weezy: { kind: "sprite", index: 14 },
+  "Rick Wade": { kind: "sprite", index: 15 },
+  "Chief Lightfoot": { kind: "sprite", index: 16 },
+  "Chief Andre": { kind: "sprite", index: 17 },
+  "Chief Flyod": { kind: "sprite", index: 18 },
+  "Chief Joseph": { kind: "image", url: PEOPLE_BACKGROUNDS[0] },
+  "Brad Dorsey": { kind: "image", url: PEOPLE_BACKGROUNDS[1] },
+  "Zen Dorsey": { kind: "image", url: PEOPLE_BACKGROUNDS[2] },
+  "Joseph Siatta": { kind: "image", url: PEOPLE_BACKGROUNDS[3] },
+  "Bryan Dorsey": { kind: "image", url: PEOPLE_BACKGROUNDS[4] },
+  "Michael Anderson, PE": { kind: "image", url: PEOPLE_BACKGROUNDS[5] },
+  "Dr. Laura Hernandez": { kind: "image", url: PEOPLE_BACKGROUNDS[6] },
+  "David Walker": { kind: "image", url: PEOPLE_BACKGROUNDS[7] },
+  "Sarah Mitchell": { kind: "image", url: PEOPLE_BACKGROUNDS[8] },
+  "James Carter": { kind: "image", url: PEOPLE_BACKGROUNDS[9] },
+  Amarri: { kind: "image", url: PEOPLE_BACKGROUNDS[10] },
+  Omari: { kind: "image", url: `${DR_PLACEHOLDER_ROOT}/portrait-01.webp` },
+  Kelz: { kind: "image", url: `${DR_PLACEHOLDER_ROOT}/portrait-10.webp` },
+};
 
 function initials(name: string) {
   return name.replace(/\([^)]*\)/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function generatedPortraitFor(name: string) {
-  const score = Array.from(name).reduce((total, character) => total + character.charCodeAt(0), 0);
-  return GENERATED_PORTRAITS[score % GENERATED_PORTRAITS.length];
+function placeholderStyle(name: string): CSSProperties {
+  const asset = PLACEHOLDER_ASSETS[name];
+  if (!asset) {
+    return {
+      backgroundImage: `url(${PEOPLE_BACKGROUNDS[10]})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center 25%",
+      backgroundRepeat: "no-repeat",
+    };
+  }
+
+  if (asset.kind === "image") {
+    return {
+      backgroundImage: `url(${asset.url})`,
+      backgroundSize: "cover",
+      backgroundPosition: asset.position || "center 25%",
+      backgroundRepeat: "no-repeat",
+    };
+  }
+
+  const column = asset.index % 5;
+  const row = Math.floor(asset.index / 5);
+  return {
+    backgroundImage: `url(${TEAM_SPRITE})`,
+    backgroundSize: "500% 400%",
+    backgroundPosition: `${column * 25}% ${row * (100 / 3)}%`,
+    backgroundRepeat: "no-repeat",
+  };
 }
 
 async function getMembers(): Promise<Member[]> {
@@ -98,17 +163,18 @@ async function getMembers(): Promise<Member[]> {
 }
 
 function Portrait({ member, mini = false }: { member: Member; mini?: boolean }) {
-  const generated = generatedPortraitFor(member.name);
   return (
     <div className={`${styles.portrait} ${mini ? styles.portraitMini : ""}`}>
       {member.photo_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={member.photo_url} alt={member.name} />
       ) : (
-        <div className={styles.peopleFallback} aria-label={`${member.name} generated placeholder portrait`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={generated} alt="" aria-hidden="true" />
-          {!mini ? <small>GENERATED PLACEHOLDER</small> : null}
+        <div
+          className={styles.peopleFallback}
+          aria-label={`${member.name} temporary placeholder portrait`}
+          style={placeholderStyle(member.name)}
+        >
+          {!mini ? <small>TEMPORARY PLACEHOLDER</small> : null}
           <span>{initials(member.name)}</span>
         </div>
       )}
