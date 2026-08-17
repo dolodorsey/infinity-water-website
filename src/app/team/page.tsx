@@ -115,6 +115,9 @@ function MemberCard({ member, featured = false }: { member: Member; featured?: b
         ) : (
           <div className={styles.initials} aria-label={`${member.name} portrait placeholder`}>
             <span>{initials(member.name)}</span>
+            <small style={{ position: "absolute", right: 12, bottom: 10, color: "rgba(197,165,90,.68)", fontFamily: "DM Mono, monospace", fontSize: 8, letterSpacing: ".16em" }}>
+              PHOTO PLACEHOLDER
+            </small>
           </div>
         )}
       </div>
