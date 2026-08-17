@@ -71,9 +71,14 @@ const PEOPLE_ROOT = "https://dzlmtvodpyhetvektfuo.supabase.co/storage/v1/object/
 const PEOPLE_BACKGROUNDS = Array.from({ length: 11 }, (_, index) => `${PEOPLE_ROOT}/app-background-${String(index + 1).padStart(2, "0")}.jpg`);
 const TEAM_SPRITE = "https://doctordorsey.com/team-placeholder-sprite";
 const DR_PLACEHOLDER_ROOT = "https://doctordorsey.com/team/placeholders";
+const TEAM_ASSET_ROOT = "https://doctordorsey.com/team";
 
-// Shared names use the same temporary visual as the enterprise sites. Infinity-only
-// names receive unused visuals so no two distinct people share one placeholder.
+const APPROVED_PHOTOS: Record<string, string> = {
+  JoJo: `${TEAM_ASSET_ROOT}/people/joseph.webp`,
+  "Joseph Siatta": `${TEAM_ASSET_ROOT}/people/joseph.webp`,
+  Quintin: `${TEAM_ASSET_ROOT}/people/quintin.webp`,
+};
+
 const PLACEHOLDER_ASSETS: Record<string, PlaceholderAsset> = {
   JoJo: { kind: "sprite", index: 0 },
   Quintin: { kind: "sprite", index: 1 },
@@ -153,7 +158,10 @@ async function getMembers(): Promise<Member[]> {
     endpoint.searchParams.set("is_published", "eq.true");
     endpoint.searchParams.set("select", "id,section,name,title,bio,photo_url,photo_status,sort_order");
     endpoint.searchParams.set("order", "sort_order.asc,name.asc");
-    const response = await fetch(endpoint.toString(), { headers: { apikey: key, Authorization: `Bearer ${key}` }, next: { revalidate: 60 } });
+    const response = await fetch(endpoint.toString(), {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+      next: { revalidate: 60 },
+    });
     if (!response.ok) return fallbackMembers;
     const data = (await response.json()) as Member[];
     return data.length ? data : fallbackMembers;
@@ -163,11 +171,12 @@ async function getMembers(): Promise<Member[]> {
 }
 
 function Portrait({ member, mini = false }: { member: Member; mini?: boolean }) {
+  const photoUrl = member.photo_url || APPROVED_PHOTOS[member.name];
   return (
     <div className={`${styles.portrait} ${mini ? styles.portraitMini : ""}`}>
-      {member.photo_url ? (
+      {photoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={member.photo_url} alt={member.name} />
+        <img src={photoUrl} alt={member.name} />
       ) : (
         <div
           className={styles.peopleFallback}
@@ -217,7 +226,9 @@ export default async function TeamPage() {
   return (
     <div className={styles.site}>
       <header className={styles.header}>
-        <Link href="/" className={styles.logo} aria-label="Infinity Water home"><Image src={siteProfile.logo} alt={siteProfile.name} width={180} height={60} priority /></Link>
+        <Link href="/" className={styles.logo} aria-label="Infinity Water home">
+          <Image src={siteProfile.logo} alt={siteProfile.name} width={180} height={60} priority />
+        </Link>
         <nav aria-label="Primary navigation">
           {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
           <Link href="/team" aria-current="page">Team</Link>
@@ -239,6 +250,15 @@ export default async function TeamPage() {
               <div><strong>{executives.length}</strong><span>Executive team</span></div>
             </div>
           </div>
+        </section>
+
+        <section style={{ padding: "28px clamp(20px,5vw,76px)", background: "#071827", borderBottom: "1px solid rgba(53,179,255,.18)" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${TEAM_ASSET_ROOT}/infinity-leadership-overview.webp`}
+            alt="Infinity Water leadership team overview"
+            style={{ display: "block", width: "min(1500px,100%)", height: "auto", margin: "0 auto", border: "1px solid rgba(53,179,255,.22)" }}
+          />
         </section>
 
         <section className={styles.leadershipSection}>
@@ -288,7 +308,7 @@ export default async function TeamPage() {
       </main>
 
       <footer className={styles.footer}>
-        <strong>{siteProfile.name}</strong>
+        <strong>Infinity Water</strong>
         <nav>
           {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
           <Link href="/team">Team</Link>
