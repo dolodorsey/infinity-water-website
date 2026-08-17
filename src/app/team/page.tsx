@@ -75,10 +75,7 @@ function initials(name: string) {
 
 async function getMembers(): Promise<Member[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
-  const key =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return fallbackMembers;
 
   try {
@@ -89,10 +86,7 @@ async function getMembers(): Promise<Member[]> {
     endpoint.searchParams.set("order", "sort_order.asc,name.asc");
 
     const response = await fetch(endpoint.toString(), {
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-      },
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
       next: { revalidate: 60 },
     });
 
@@ -104,24 +98,28 @@ async function getMembers(): Promise<Member[]> {
   }
 }
 
-function MemberCard({ member, featured = false }: { member: Member; featured?: boolean }) {
+function Portrait({ member, mini = false }: { member: Member; mini?: boolean }) {
   return (
-    <article className={`${styles.card} ${featured ? styles.featuredCard : ""}`}>
-      <div className={styles.portrait}>
-        {member.photo_url ? (
-          // Plain img keeps future Supabase/CDN portrait URLs flexible without a deploy-time domain allowlist.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={member.photo_url} alt={member.name} />
-        ) : (
-          <div className={styles.initials} aria-label={`${member.name} portrait placeholder`}>
-            <span>{initials(member.name)}</span>
-            <small style={{ position: "absolute", right: 12, bottom: 10, color: "rgba(197,165,90,.68)", fontFamily: "DM Mono, monospace", fontSize: 8, letterSpacing: ".16em" }}>
-              PHOTO PLACEHOLDER
-            </small>
-          </div>
-        )}
-      </div>
+    <div className={`${styles.portrait} ${mini ? styles.portraitMini : ""}`}>
+      {member.photo_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={member.photo_url} alt={member.name} />
+      ) : (
+        <div className={styles.initials} aria-label={`${member.name} portrait placeholder`}>
+          <span>{initials(member.name)}</span>
+          {!mini ? <small>PORTRAIT PENDING</small> : null}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LeadershipCard({ member, index }: { member: Member; index: number }) {
+  return (
+    <article className={styles.leadershipCard}>
+      <Portrait member={member} />
       <div className={styles.cardCopy}>
+        <span>{String(index + 1).padStart(2, "0")}</span>
         <h3>{member.name}</h3>
         {member.title ? <p className={styles.role}>{member.title}</p> : null}
         {member.bio ? <p className={styles.bio}>{member.bio}</p> : null}
@@ -130,36 +128,15 @@ function MemberCard({ member, featured = false }: { member: Member; featured?: b
   );
 }
 
-function TeamSection({
-  eyebrow,
-  title,
-  members,
-  featured = false,
-}: {
-  eyebrow: string;
-  title: string;
-  members: Member[];
-  featured?: boolean;
-}) {
-  if (!members.length) return null;
-
+function ExecutiveCard({ member }: { member: Member }) {
   return (
-    <section className={styles.teamSection}>
-      <header className={styles.sectionHeader}>
-        <p>{eyebrow}</p>
-        <h2>{title}</h2>
-        <span>{String(members.length).padStart(2, "0")}</span>
-      </header>
-      <div className={featured ? styles.leadershipGrid : styles.rosterGrid}>
-        {members.map((member) => (
-          <MemberCard
-            key={`${member.section}-${member.name}`}
-            member={member}
-            featured={featured}
-          />
-        ))}
+    <article className={styles.executiveCard}>
+      <Portrait member={member} />
+      <div className={styles.executiveCopy}>
+        <h3>{member.name}</h3>
+        {member.title ? <p>{member.title}</p> : null}
       </div>
-    </section>
+    </article>
   );
 }
 
@@ -176,9 +153,7 @@ export default async function TeamPage() {
           <Image src={siteProfile.logo} alt={siteProfile.name} width={180} height={60} priority />
         </Link>
         <nav aria-label="Primary navigation">
-          {siteProfile.nav.map(([label, href]) => (
-            <Link key={href} href={href}>{label}</Link>
-          ))}
+          {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
           <Link href="/team" aria-current="page">Team</Link>
         </nav>
         <Link href="/forms" className={styles.headerAction}>Start an inquiry</Link>
@@ -186,41 +161,70 @@ export default async function TeamPage() {
 
       <main>
         <section className={styles.hero}>
-          <div className={styles.heroTexture} />
-          <div className={styles.heroCopy}>
-            <p>THE PEOPLE BEHIND INFINITY</p>
-            <h1>Experienced leaders.<br /><em>One infinite standard.</em></h1>
-            <span>
-              Leadership, governance, operations, partnerships, and execution aligned around the long-term growth of Infinity Water.
-            </span>
-          </div>
-          <div className={styles.heroStats}>
-            <div><strong>{leadership.length}</strong><span>Leadership</span></div>
-            <div><strong>{board.length}</strong><span>Board</span></div>
-            <div><strong>{executives.length}</strong><span>Executives</span></div>
+          <div className={styles.heroInner}>
+            <div className={styles.heroCopy}>
+              <p>INFINITY WATER / LEADERSHIP</p>
+              <h1>The people moving water forward.</h1>
+              <span>Leadership, governance and execution aligned around growth, distribution, partnerships and long-term market expansion.</span>
+            </div>
+            <div className={styles.heroMeta}>
+              <div><strong>{leadership.length}</strong><span>Leadership</span></div>
+              <div><strong>{board.length}</strong><span>Board</span></div>
+              <div><strong>{executives.length}</strong><span>Executive team</span></div>
+            </div>
           </div>
         </section>
 
-        <TeamSection eyebrow="LEADERSHIP TEAM" title="Deep expertise. Shared vision." members={leadership} featured />
-        <TeamSection eyebrow="GOVERNANCE" title="The Board." members={board} />
-        <TeamSection eyebrow="OPERATIONS & EXECUTION" title="Executive team." members={executives} />
+        <section className={styles.leadershipSection}>
+          <header className={styles.sectionIntro}>
+            <p>LEADERSHIP TEAM</p>
+            <h2>Experience at the top.</h2>
+            <span>Senior leadership guiding operations, engineering, finance, policy and strategic partnerships.</span>
+          </header>
+          <div className={styles.leadershipGrid}>
+            {leadership.map((member, index) => <LeadershipCard key={`${member.section}-${member.name}`} member={member} index={index} />)}
+          </div>
+        </section>
+
+        <section className={styles.boardSection}>
+          <header className={styles.sectionIntro}>
+            <p>GOVERNANCE</p>
+            <h2>The Board.</h2>
+            <span>Institutional perspective, accountability and long-range stewardship.</span>
+          </header>
+          <div className={styles.boardList}>
+            {board.map((member, index) => (
+              <article key={`${member.section}-${member.name}`}>
+                <span className={styles.boardIndex}>{String(index + 1).padStart(2, "0")}</span>
+                <Portrait member={member} mini />
+                <div><h3>{member.name}</h3><p>{member.title || "Board Member"}</p></div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.executiveSection}>
+          <header className={styles.sectionIntro}>
+            <p>OPERATIONS & EXECUTION</p>
+            <h2>The team that makes it move.</h2>
+            <span>Cross-functional operators supporting enterprise execution across markets and initiatives.</span>
+          </header>
+          <div className={styles.executiveGrid}>
+            {executives.map((member) => <ExecutiveCard key={`${member.section}-${member.name}`} member={member} />)}
+          </div>
+        </section>
 
         <section className={styles.cta}>
           <p>PARTNERSHIPS · HOSPITALITY · DISTRIBUTION</p>
           <h2>Build the next market with us.</h2>
-          <div>
-            <Link href="/forms">Start an inquiry</Link>
-            <Link href="/about">About Infinity</Link>
-          </div>
+          <div><Link href="/forms">Start an inquiry</Link><Link href="/about">About Infinity</Link></div>
         </section>
       </main>
 
       <footer className={styles.footer}>
         <strong>{siteProfile.name}</strong>
         <nav>
-          {siteProfile.nav.map(([label, href]) => (
-            <Link key={href} href={href}>{label}</Link>
-          ))}
+          {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
           <Link href="/team">Team</Link>
         </nav>
         <span>© 2026 Infinity Water · A Kollective Hospitality Group Brand</span>
