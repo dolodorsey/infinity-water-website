@@ -42,7 +42,7 @@ const fallbackMembers: Member[] = [
   { section: "board", name: "Joseph Siatta", title: "Board Member", sort_order: 100 },
   { section: "board", name: "Quintin", title: "Board Member", sort_order: 110 },
 
-  { section: "executive", name: "Joseph Siatta", title: "Co-Chief Operating Officer, Enterprise Operations", sort_order: 10 },
+  { section: "executive", name: "JoJo", title: "Co-Chief Operating Officer, Enterprise Operations", sort_order: 10 },
   { section: "executive", name: "Quintin", title: "Co-Chief Operating Officer, Business Operations & Growth", sort_order: 20 },
   { section: "executive", name: "Sevant", title: "Chief Strategy & Activation Officer", sort_order: 30 },
   { section: "executive", name: "Grayson", title: "Director of Nightlife & Brand Activations", sort_order: 40 },
