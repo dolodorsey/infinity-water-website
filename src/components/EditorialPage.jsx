@@ -26,6 +26,7 @@ export function EditorialPage({ page, slug }) {
         </Link>
         <nav aria-label="Primary navigation">
           {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
+          <Link href="/team">Team</Link>
         </nav>
         <Link href="/forms" className={styles.headerAction}>Start an inquiry</Link>
       </header>
@@ -93,7 +94,10 @@ export function EditorialPage({ page, slug }) {
 
       <footer className={styles.footer}>
         <strong>{siteProfile.name}</strong>
-        <nav>{siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}</nav>
+        <nav>
+          {siteProfile.nav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
+          <Link href="/team">Team</Link>
+        </nav>
         <span>© 2026 Infinity Water. Product-specific terms are confirmed in writing.</span>
       </footer>
     </div>
