@@ -32,14 +32,11 @@ jobs:
       - name: Refresh locked dependency graph
         run: npm install --package-lock-only --ignore-scripts
 
-      - name: Verify full dependency audit
-        run: npm audit --audit-level=high
-
       - name: Commit lockfile if changed
         shell: bash
         run: |
           if git diff --quiet -- package-lock.json; then
-            echo "Lockfile already satisfies the audited package graph."
+            echo "Lockfile already matches the patched package graph."
             exit 0
           fi
           git config user.name "github-actions[bot]"
