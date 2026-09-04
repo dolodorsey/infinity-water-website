@@ -37,6 +37,9 @@ if (packageJson.dependencies?.next !== '16.3.4') {
 if (packageJson.engines?.node !== '24.x') {
   throw new Error('Infinity runtime: Node must remain pinned to 24.x');
 }
+if (packageJson.overrides?.nanoid !== '3.3.18') {
+  throw new Error('Infinity runtime: nanoid security override must remain at patched 3.3.18');
+}
 
 const nextConfig = requireText('next.config.mjs', "poweredByHeader: false", 'Infinity framework disclosure');
 for (const header of [
