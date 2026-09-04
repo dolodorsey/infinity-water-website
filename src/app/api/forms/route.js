@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 
 const BRAND_KEY = 'infinity';
 const BRAND_NAME = 'Infinity Water';
+const INTAKE_TABLE = 'infinity_quote_requests';
+const ASSIGNED_TEAM = 'Infinity Water Sales';
 const GHL_API = 'https://services.leadconnectorhq.com';
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
 
 function clean(value, max = 5000) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -15,7 +18,19 @@ function formDetails(formType, fields) {
   return [`[${formType}]`, ...lines].join('\n').slice(0, 5000);
 }
 
-async function storeLead({ formType, name, email, phone, source, fields }) {
+function cleanUtm(body, fields) {
+  const bodyUtm = body?.utm && typeof body.utm === 'object' ? body.utm : {};
+  const normalized = {};
+
+  for (const key of UTM_KEYS) {
+    const value = clean(bodyUtm[key] || body?.[key] || fields?.[key], 250);
+    if (value) normalized[key] = value;
+  }
+
+  return normalized;
+}
+
+async function storeLead({ formType, name, email, phone, source, fields, utm }) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, '');
   const key =
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
@@ -32,7 +47,7 @@ async function storeLead({ formType, name, email, phone, source, fields }) {
     200
   );
 
-  const response = await fetch(`${url}/rest/v1/quote_requests`, {
+  const response = await fetch(`${url}/rest/v1/${INTAKE_TABLE}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +56,6 @@ async function storeLead({ formType, name, email, phone, source, fields }) {
       Prefer: 'return=minimal',
     },
     body: JSON.stringify({
-      brand_key: BRAND_KEY,
       inquiry_type: formType,
       name,
       email,
@@ -52,7 +66,8 @@ async function storeLead({ formType, name, email, phone, source, fields }) {
       workflow_status: 'submitted',
       consent_at: new Date().toISOString(),
       source_page: source || `${BRAND_NAME} Website`,
-      utm: {},
+      utm,
+      assigned_team: ASSIGNED_TEAM,
     }),
   });
 
@@ -116,6 +131,7 @@ export async function POST(request) {
     const phone = clean(body.phone, 50);
     const source = clean(body.source, 500);
     const fields = body.fields || body.form_data || {};
+    const utm = cleanUtm(body, fields);
 
     if (clean(fields.company_website, 200)) {
       return NextResponse.json({ success: true });
@@ -131,7 +147,7 @@ export async function POST(request) {
       );
     }
 
-    const reference = await storeLead({ formType, name, email, phone, source, fields });
+    const reference = await storeLead({ formType, name, email, phone, source, fields, utm });
     const crmSynced = await syncOptionalCrm({ formType, name, email, phone, fields }).catch(
       () => false
     );
@@ -144,7 +160,7 @@ export async function POST(request) {
     });
   } catch (error) {
     const rateLimited = error?.message === 'rate_limit';
-    console.error('Form submission failed:', error?.message || error);
+    console.error('Infinity Water form submission failed:', error?.message || error);
     return NextResponse.json(
       {
         success: false,
