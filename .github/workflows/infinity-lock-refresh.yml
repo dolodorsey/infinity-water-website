@@ -1,0 +1,44 @@
+name: Infinity Dependency Lock Refresh
+
+on:
+  push:
+    branches:
+      - enterprise/infinity-lead-isolation-20260903
+    paths:
+      - package.json
+      - .github/workflows/infinity-lock-refresh.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-lock:
+    if: ${{ !contains(github.event.head_commit.message, '[lock-refresh]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Infinity branch
+        uses: actions/checkout@v4
+        with:
+          ref: enterprise/infinity-lead-isolation-20260903
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Refresh lockfile without lifecycle scripts
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Commit refreshed lockfile
+        shell: bash
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "Lockfile already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore: refresh Infinity dependency lock [lock-refresh]"
+          git push origin HEAD:enterprise/infinity-lead-isolation-20260903
