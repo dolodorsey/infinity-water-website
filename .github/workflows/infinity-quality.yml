@@ -29,14 +29,14 @@ jobs:
       - name: Verify Infinity isolation contract
         run: node scripts/verify-enterprise-contract.mjs
 
-      - name: Audit production dependencies
+      - name: Audit complete dependency graph
         shell: bash
         run: |
           set -o pipefail
           for attempt in 1 2 3; do
             log_file="$(mktemp)"
             set +e
-            npm_config_fetch_timeout=60000 npm audit --omit=dev --audit-level=high 2>&1 | tee "$log_file"
+            npm_config_fetch_timeout=60000 npm audit --audit-level=high 2>&1 | tee "$log_file"
             status=${PIPESTATUS[0]}
             set -e
 
