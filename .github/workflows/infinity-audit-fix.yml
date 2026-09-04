@@ -5,6 +5,7 @@ on:
     branches:
       - enterprise/infinity-phase1-security-20260903
     paths:
+      - package.json
       - .github/workflows/infinity-audit-fix.yml
 
 permissions:
@@ -12,6 +13,7 @@ permissions:
 
 jobs:
   refresh-audited-lock:
+    if: ${{ !contains(github.event.head_commit.message, 'refresh Infinity audited lockfile') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -27,8 +29,8 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Refresh vulnerable transitive dependencies
-        run: npm audit fix --package-lock-only --ignore-scripts
+      - name: Refresh locked dependency graph
+        run: npm install --package-lock-only --ignore-scripts
 
       - name: Verify full dependency audit
         run: npm audit --audit-level=high
@@ -37,7 +39,7 @@ jobs:
         shell: bash
         run: |
           if git diff --quiet -- package-lock.json; then
-            echo "Lockfile already satisfies the audit."
+            echo "Lockfile already satisfies the audited package graph."
             exit 0
           fi
           git config user.name "github-actions[bot]"
