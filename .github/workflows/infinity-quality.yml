@@ -1,0 +1,70 @@
+name: Infinity Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify Infinity isolation contract
+        run: node scripts/verify-enterprise-contract.mjs
+
+      - name: Audit complete dependency graph
+        shell: bash
+        run: |
+          set -o pipefail
+          for attempt in 1 2 3; do
+            log_file="$(mktemp)"
+            set +e
+            npm_config_fetch_timeout=60000 npm audit --audit-level=high 2>&1 | tee "$log_file"
+            status=${PIPESTATUS[0]}
+            set -e
+
+            if [ "$status" -eq 0 ]; then
+              rm -f "$log_file"
+              exit 0
+            fi
+
+            if grep -Eqi 'network timeout|audit endpoint returned an error|ECONNRESET|ETIMEDOUT|EAI_AGAIN|ENOTFOUND|502 Bad Gateway|503 Service Unavailable|504 Gateway Timeout' "$log_file"; then
+              rm -f "$log_file"
+              if [ "$attempt" -lt 3 ]; then
+                sleep $((attempt * 10))
+                continue
+              fi
+            else
+              rm -f "$log_file"
+              exit "$status"
+            fi
+          done
+
+          echo 'npm audit remained unavailable after three bounded retries.' >&2
+          exit 1
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
