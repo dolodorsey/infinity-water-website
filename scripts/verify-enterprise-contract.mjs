@@ -30,6 +30,19 @@ requireText(migrationPath, 'revoke all on table public.infinity_quote_requests f
 requireText(migrationPath, 'grant insert on table public.infinity_quote_requests to anon, authenticated;', 'Infinity public intake contract');
 requireText(migrationPath, "assigned_team = 'Infinity Water Sales'", 'Infinity ownership boundary');
 
+const outboxPath = 'supabase/migrations/20260904034800_infinity_crm_outbox.sql';
+const outbox = requireText(outboxPath, 'create table public.infinity_crm_outbox', 'Infinity CRM outbox');
+requireText(outboxPath, "location_id text not null default 'OQcKgzwCYdUYLSjZnRBE'", 'Infinity outbox destination');
+requireText(outboxPath, "check (location_id = 'OQcKgzwCYdUYLSjZnRBE')", 'Infinity outbox location lock');
+requireText(outboxPath, "idempotency_key = 'infinity_crm:' || reference", 'Infinity outbox idempotency');
+requireText(outboxPath, 'revoke all on table public.infinity_crm_outbox from public, anon, authenticated;', 'Infinity outbox browser isolation');
+requireText(outboxPath, 'after insert on public.infinity_quote_requests', 'Infinity outbox durable queue trigger');
+for (const forbidden of ['quote_requests_brand_key_fkey', 'sos_', 'oc_', 'gt_', 'rex_', 'mission365_', 'lm_']) {
+  if (outbox.includes(forbidden)) {
+    throw new Error(`Infinity CRM outbox isolation: forbidden cross-brand reference ${forbidden}`);
+  }
+}
+
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 if (packageJson.dependencies?.next !== '16.3.4') {
   throw new Error('Infinity runtime: Next.js must remain pinned to 16.3.4');
