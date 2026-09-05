@@ -16,6 +16,11 @@ export default function InfinityExperienceLayer(){
   useEffect(()=>{
     const onScroll=()=>{const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);setProgress(Math.min(1,scrollY/max));};
     const onMove=(e:MouseEvent)=>setMouse({x:e.clientX,y:e.clientY});
+    const heroHeading=document.querySelector<HTMLElement>("main section h1");
+    const heroCopy=heroHeading?.parentElement;
+    if(heroCopy) heroCopy.classList.add("iw-hero-copy-overlay");
+    const heroSection=heroHeading?.closest("section");
+    if(heroSection) heroSection.classList.add("iw-clean-hero");
     onScroll();window.addEventListener("scroll",onScroll,{passive:true});window.addEventListener("mousemove",onMove,{passive:true});
     return()=>{window.removeEventListener("scroll",onScroll);window.removeEventListener("mousemove",onMove)};
   },[]);
