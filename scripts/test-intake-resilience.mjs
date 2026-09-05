@@ -1,6 +1,16 @@
 import assert from 'node:assert/strict';
-import { POST } from '../src/app/api/forms/route.js';
+import fs from 'node:fs/promises';
 
+const routeSourcePath = new URL('../src/app/api/forms/route.js', import.meta.url);
+const harnessPath = new URL('./.tmp-infinity-intake-route.mjs', import.meta.url);
+const routeSource = await fs.readFile(routeSourcePath, 'utf8');
+await fs.writeFile(
+  harnessPath,
+  routeSource.replace("from 'next/server'", "from 'next/server.js'"),
+  'utf8'
+);
+
+const { POST } = await import(`${harnessPath.href}?v=${Date.now()}`);
 const originalFetch = globalThis.fetch;
 const originalEnv = {
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -128,4 +138,5 @@ try {
     if (value === undefined) delete process.env[key];
     else process.env[key] = value;
   }
+  await fs.rm(harnessPath, { force: true });
 }
