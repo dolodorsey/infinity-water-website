@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import InfinityExperienceLayer from "@/components/InfinityExperienceLayer";
 import "./globals.css";
 import "./experience-layer.css";
+import "./clean-hero.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://infinity-water.vercel.app"),
