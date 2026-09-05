@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import InfinityExperienceLayer from "@/components/InfinityExperienceLayer";
 import "./globals.css";
+import "./experience-layer.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://infinity-water.vercel.app"),
@@ -17,7 +19,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><InfinityExperienceLayer/>{children}</body>
     </html>
   );
 }
