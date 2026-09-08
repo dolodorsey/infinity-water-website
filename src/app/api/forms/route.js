@@ -35,11 +35,28 @@ function cleanUtm(value) {
   );
 }
 
-function formDetails(formType, fields, reference) {
+function refererAttribution(request) {
+  const referer = clean(request.headers.get('referer'), 2000);
+  if (!referer) return {};
+
+  try {
+    const url = new URL(referer);
+    return cleanUtm(Object.fromEntries(url.searchParams.entries()));
+  } catch {
+    return {};
+  }
+}
+
+function formDetails(formType, fields, reference, utm = {}) {
   const lines = Object.entries(fields || {})
     .filter(([, value]) => value !== '' && value !== null && value !== undefined)
     .map(([key, value]) => `${key.replaceAll('_', ' ')}: ${String(value)}`);
-  return [`[${formType}]`, `reference: ${reference}`, ...lines].join('\n').slice(0, 5000);
+  const attribution = Object.entries(utm)
+    .filter(([, value]) => value)
+    .map(([key, value]) => `${key.replaceAll('_', ' ')}: ${value}`);
+  return [`[${formType}]`, `reference: ${reference}`, ...lines, ...attribution]
+    .join('\n')
+    .slice(0, 5000);
 }
 
 function createReference() {
@@ -78,7 +95,7 @@ async function storeLead({ formType, name, email, phone, source, fields, utm, re
       email,
       phone: phone || null,
       organization: organization || null,
-      details: formDetails(formType, fields, reference),
+      details: formDetails(formType, fields, reference, utm),
       reference,
       workflow_status: 'submitted',
       consent_at: new Date().toISOString(),
@@ -97,7 +114,7 @@ async function storeLead({ formType, name, email, phone, source, fields, utm, re
   return true;
 }
 
-async function syncOptionalCrm({ formType, name, email, phone, fields, reference }) {
+async function syncOptionalCrm({ formType, name, email, phone, fields, reference, utm }) {
   const pitToken = process.env.GHL_PIT_TOKEN;
   if (!pitToken) return false;
 
@@ -136,7 +153,7 @@ async function syncOptionalCrm({ formType, name, email, phone, fields, reference
       Authorization: `Bearer ${pitToken}`,
       Version: '2021-07-28',
     },
-    body: JSON.stringify({ body: formDetails(formType, fields, reference) }),
+    body: JSON.stringify({ body: formDetails(formType, fields, reference, utm) }),
   }).catch(() => undefined);
 
   return true;
@@ -174,7 +191,7 @@ export async function POST(request) {
     const phone = clean(body.phone, 50);
     const source = clean(body.source, 500);
     const fields = cleanFields(body.fields || body.form_data);
-    const utm = cleanUtm(body.utm);
+    const utm = { ...refererAttribution(request), ...cleanUtm(body.utm) };
 
     if (clean(fields.company_website, 200)) {
       return NextResponse.json(
@@ -215,6 +232,7 @@ export async function POST(request) {
       phone,
       fields,
       reference,
+      utm,
     }).catch(() => false);
 
     if (!databaseStored && !crmSynced) {
