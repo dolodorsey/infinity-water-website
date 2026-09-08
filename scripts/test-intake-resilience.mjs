@@ -24,10 +24,12 @@ process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'test-publishable-key';
 delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 process.env.GHL_PIT_TOKEN = 'test-infinity-pit-token';
 
-function request(body) {
+function request(body, referer = '') {
+  const headers = { 'Content-Type': 'application/json' };
+  if (referer) headers.Referer = referer;
   return new Request('https://watertoinfinity.com/api/forms', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({
       formType: 'wholesale',
       name: 'Infinity QA',
@@ -46,8 +48,9 @@ function json(body, status = 200) {
   });
 }
 
-async function testCrmOnlyFallback() {
+async function testCrmOnlyFallbackPreservesAttribution() {
   let crmBody;
+  let noteBody;
   globalThis.fetch = async (url, init = {}) => {
     const target = String(url);
     if (target.includes('/rest/v1/infinity_quote_requests')) {
@@ -58,12 +61,18 @@ async function testCrmOnlyFallback() {
       return json({ contact: { id: 'contact-infinity-qa' } });
     }
     if (target.includes('/contacts/contact-infinity-qa/notes')) {
+      noteBody = JSON.parse(init.body);
       return json({ ok: true }, 201);
     }
     throw new Error(`Unexpected URL: ${target}`);
   };
 
-  const response = await POST(request({}));
+  const response = await POST(
+    request(
+      { utm: { utm_source: 'newsletter', utm_campaign: 'launch' } },
+      'https://watertoinfinity.com/wholesale?utm_source=instagram&utm_medium=paid_social&gclid=GCLID123'
+    )
+  );
   const body = await response.json();
   assert.equal(response.status, 202);
   assert.equal(body.success, true);
@@ -72,6 +81,11 @@ async function testCrmOnlyFallback() {
   assert.match(body.reference, /^INFINITY-\d{8}-[A-Z0-9]{10}$/);
   assert.equal(crmBody.locationId, 'OQcKgzwCYdUYLSjZnRBE');
   assert.match(crmBody.source, new RegExp(body.reference));
+  assert.match(noteBody.body, /utm source: newsletter/);
+  assert.match(noteBody.body, /utm medium: paid_social/);
+  assert.match(noteBody.body, /utm campaign: launch/);
+  assert.match(noteBody.body, /gclid: GCLID123/);
+  assert.doesNotMatch(noteBody.body, /utm source: instagram/);
 }
 
 async function testTotalFailureFailsClosed() {
@@ -94,10 +108,12 @@ async function testTotalFailureFailsClosed() {
   assert.match(body.reference, /^INFINITY-\d{8}-[A-Z0-9]{10}$/);
 }
 
-async function testDatabaseOnlySuccess() {
-  globalThis.fetch = async (url) => {
+async function testDatabaseOnlySuccessPreservesAttribution() {
+  let databaseBody;
+  globalThis.fetch = async (url, init = {}) => {
     const target = String(url);
     if (target.includes('/rest/v1/infinity_quote_requests')) {
+      databaseBody = JSON.parse(init.body);
       return new Response(null, { status: 201 });
     }
     if (target.endsWith('/contacts/upsert')) {
@@ -106,12 +122,22 @@ async function testDatabaseOnlySuccess() {
     throw new Error(`Unexpected URL: ${target}`);
   };
 
-  const response = await POST(request({}));
+  const response = await POST(
+    request({}, 'https://watertoinfinity.com/forms/wholesale?utm_source=google&utm_medium=cpc&fbclid=FB123')
+  );
   const body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.success, true);
   assert.equal(body.durability, 'database_only');
   assert.equal(body.crmSynced, false);
+  assert.deepEqual(databaseBody.utm, {
+    utm_source: 'google',
+    utm_medium: 'cpc',
+    fbclid: 'FB123',
+  });
+  assert.match(databaseBody.details, /utm source: google/);
+  assert.match(databaseBody.details, /utm medium: cpc/);
+  assert.match(databaseBody.details, /fbclid: FB123/);
 }
 
 async function testCrossBrandFailsBeforeNetwork() {
@@ -127,11 +153,11 @@ async function testCrossBrandFailsBeforeNetwork() {
 }
 
 try {
-  await testCrmOnlyFallback();
+  await testCrmOnlyFallbackPreservesAttribution();
   await testTotalFailureFailsClosed();
-  await testDatabaseOnlySuccess();
+  await testDatabaseOnlySuccessPreservesAttribution();
   await testCrossBrandFailsBeforeNetwork();
-  console.log('Infinity intake resilience behavior verified.');
+  console.log('Infinity intake resilience and attribution behavior verified.');
 } finally {
   globalThis.fetch = originalFetch;
   for (const [key, value] of Object.entries(originalEnv)) {
