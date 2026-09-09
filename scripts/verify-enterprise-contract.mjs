@@ -76,6 +76,14 @@ if (packageJson.engines?.node !== '24.x') {
 if (packageJson.overrides?.nanoid !== '3.3.18') {
   throw new Error('Infinity runtime: nanoid security override must remain at patched 3.3.18');
 }
+if (packageJson.overrides?.['js-yaml'] !== '4.3.2') {
+  throw new Error('Infinity runtime: js-yaml security override must remain at patched 4.3.2');
+}
+
+const lockJson = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+if (lockJson.packages?.['node_modules/js-yaml']?.version !== '4.3.2') {
+  throw new Error('Infinity runtime: lockfile must resolve js-yaml to patched 4.3.2');
+}
 
 const nextConfig = requireText('next.config.mjs', "poweredByHeader: false", 'Infinity framework disclosure');
 for (const header of [
