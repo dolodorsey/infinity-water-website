@@ -24,6 +24,42 @@ if (route.includes('process.env.GHL_LOCATION_ID')) {
 requireText(routePath, "const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';", 'Infinity CRM destination');
 requireText(routePath, "const BRAND_KEY = 'infinity';", 'Infinity brand identity');
 
+const connectPath = 'src/app/connect/page.jsx';
+const connect = requireText(
+  connectPath,
+  "const SECONDARY_FORMS = ['vendor', 'influencer', 'sponsor', 'inquiry'];",
+  'Infinity connect revenue focus'
+);
+requireText(connectPath, 'forms={SECONDARY_FORMS}', 'Infinity connect explicit form scope');
+for (const path of [
+  '/water/infinity-water/wholesale',
+  '/water/infinity-water/hospitality',
+  '/water/infinity-water/distribution',
+  '/water/infinity-water/events',
+]) {
+  if (!connect.includes(path)) {
+    throw new Error(`Infinity connect routing: missing ${path}`);
+  }
+}
+for (const unrelatedForm of [
+  'artist_painter',
+  'artist_music',
+  'onboarding',
+  'what_you_do',
+  'rsvp',
+  'intern',
+  'volunteer',
+  'table_reservation',
+  'nda',
+]) {
+  if (connect.includes(`'${unrelatedForm}'`)) {
+    throw new Error(`Infinity connect isolation: unrelated form ${unrelatedForm} must not be exposed`);
+  }
+}
+if (connect.includes('View every Infinity Water inquiry')) {
+  throw new Error('Infinity connect isolation: unscoped all-inquiry escape link must not be exposed');
+}
+
 const migrationPath = 'supabase/migrations/20260903235440_infinity_quote_requests_isolation.sql';
 requireText(migrationPath, 'create table public.infinity_quote_requests', 'Infinity dataset migration');
 requireText(migrationPath, 'revoke all on table public.infinity_quote_requests from anon, authenticated;', 'Infinity least privilege');
