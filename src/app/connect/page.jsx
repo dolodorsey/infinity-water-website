@@ -9,6 +9,8 @@ const DIRECT_FORMS = [
   ['Events & Activations', 'https://khg-forms.vercel.app/water/infinity-water/events'],
 ];
 
+const SECONDARY_FORMS = ['vendor', 'influencer', 'sponsor', 'inquiry'];
+
 export default function ConnectPage() {
   return (
     <main style={{ minHeight: '100vh', background: '#080808' }}>
@@ -23,8 +25,8 @@ export default function ConnectPage() {
         }}>
           Connect With Us
         </h1>
-        <p style={{ fontSize: 'clamp(14px, 1.5vw, 17px)', color: 'rgba(255,255,255,0.62)', maxWidth: 620, margin: '0 auto', lineHeight: 1.6 }}>
-          Choose a direct business inquiry or use the existing connection forms below.
+        <p style={{ fontSize: 'clamp(14px, 1.5vw, 17px)', color: 'rgba(255,255,255,0.62)', maxWidth: 680, margin: '0 auto', lineHeight: 1.6 }}>
+          Start with the Infinity Water business path that matches your opportunity. Partnership and support inquiries are available below.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 10, marginTop: 26 }}>
           {DIRECT_FORMS.map(([label, href]) => (
@@ -34,9 +36,14 @@ export default function ConnectPage() {
             }}>{label} ↗</a>
           ))}
         </div>
-        <a href="https://khg-forms.vercel.app/water/infinity-water" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: 16, color: '#d4af37', fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', textDecoration: 'none' }}>View every Infinity Water inquiry →</a>
       </section>
-      <KHGFormGrid brandKey="infinity_water" showSelective={false} />
+      <KHGFormGrid
+        brandKey="infinity_water"
+        title="Partnerships & Support"
+        subtitle="Use these Infinity Water-only paths for brand partnerships, vendors, creators, sponsorships, or general support."
+        forms={SECONDARY_FORMS}
+        columns={4}
+      />
     </main>
   );
 }
