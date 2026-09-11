@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 
 export default function InfinityConversionLayer() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -38,9 +39,9 @@ export default function InfinityConversionLayer() {
   return (
     <aside className="infinity-conversion" aria-label="Infinity Water commercial actions">
       <div className="infinity-conversion__links">
-        <a href="/hospitality">Hospitality</a>
-        <a href="/wholesale">Wholesale</a>
-        <a className="infinity-conversion__primary" href="/connect">Start a conversation</a>
+        <Link href="/hospitality">Hospitality</Link>
+        <Link href="/wholesale">Wholesale</Link>
+        <Link className="infinity-conversion__primary" href="/connect">Start a conversation</Link>
       </div>
       <form className="infinity-conversion__email" onSubmit={submit}>
         <label htmlFor="infinity-updates-email">Launch + placement updates</label>
