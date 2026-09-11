@@ -24,6 +24,40 @@ if (route.includes('process.env.GHL_LOCATION_ID')) {
 requireText(routePath, "const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';", 'Infinity CRM destination');
 requireText(routePath, "const BRAND_KEY = 'infinity';", 'Infinity brand identity');
 
+requireText(routePath, 'let databaseStored = false;', 'Infinity intake persistence state');
+requireText(routePath, 'if (!databaseStored && !crmSynced)', 'Infinity dual-persistence failure gate');
+requireText(routePath, "durability: 'crm_only'", 'Infinity degraded accepted state');
+requireText(routePath, 'status: 202', 'Infinity degraded acceptance contract');
+requireText(routePath, "'Retry-After': String(RETRY_AFTER_SECONDS)", 'Infinity outage retry contract');
+requireText(routePath, "durability: crmSynced ? 'database+crm' : 'database_only'", 'Infinity healthy durability contract');
+requireText(routePath, 'Infinity lead accepted CRM-only while database is unavailable', 'Infinity degraded observability');
+requireText(routePath, 'Infinity intake unavailable', 'Infinity full-outage observability');
+
+const storageAttempt = route.indexOf('await storeLead({');
+const crmAttempt = route.indexOf('const crmSynced = await syncOptionalCrm({');
+const dualFailureGate = route.indexOf('if (!databaseStored && !crmSynced)');
+if (storageAttempt < 0 || crmAttempt < 0 || dualFailureGate < 0 || crmAttempt > dualFailureGate) {
+  throw new Error('Infinity intake resilience: CRM fallback must execute before the dual-failure response');
+}
+
+for (const forbidden of [
+  'sos_',
+  'oc_',
+  'gt_',
+  'rex_',
+  'mission365_',
+  'halloween_',
+  'stush',
+  'pronto',
+  'ora_',
+  'noir_',
+  'xxx_',
+]) {
+  if (route.includes(forbidden)) {
+    throw new Error(`Infinity intake isolation: forbidden cross-brand reference ${forbidden}`);
+  }
+}
+
 const connectPath = 'src/app/connect/page.jsx';
 const connect = requireText(
   connectPath,
