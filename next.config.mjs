@@ -23,6 +23,15 @@ const nextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  async redirects() {
+    return [
+      {
+        source: '/hero.mp4',
+        destination: '/api/media/drive/1xnjstbtVvTUjVBiM5r-GWa24f8lZby4j',
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {
