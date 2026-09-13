@@ -1,0 +1,88 @@
+/* Approved 2026 Infinity Water mockup direction — loaded last. */
+body { background:#05090d; }
+
+/* Remove the redundant logo-only intro so the animated hero is the actual home screen. */
+main > nav + div { display:none !important; }
+
+/* First animated scene */
+main > nav + div + section {
+  min-height:100svh !important;
+  height:100svh !important;
+  cursor:default !important;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+main > nav + div + section::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.62) 38%,rgba(0,0,0,.08) 72%),
+    linear-gradient(180deg,rgba(0,0,0,.35),transparent 38%,rgba(0,0,0,.72));
+  z-index:1;
+}
+main > nav + div + section > div:nth-of-type(4) {
+  z-index:3 !important;
+  left:clamp(24px,6vw,96px) !important;
+  right:auto !important;
+  bottom:clamp(110px,13vh,150px) !important;
+  width:min(800px,72vw) !important;
+  max-width:none !important;
+}
+main > nav + div + section > div:nth-of-type(4) > div > div:first-child {
+  font-size:0 !important;
+  letter-spacing:0 !important;
+  margin-bottom:24px !important;
+}
+main > nav + div + section > div:nth-of-type(4) > div > div:first-child::after {
+  content:"ULTRA-PURE · NATURALLY BALANCED · GLOBALLY RECOGNIZED";
+  font-family:'DM Mono',monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.28em;
+  color:#55a6e8;
+}
+main > nav + div + section h1 {
+  font-size:0 !important;
+  line-height:.84 !important;
+  letter-spacing:-.06em !important;
+  margin-bottom:30px !important;
+  max-width:9ch;
+}
+main > nav + div + section h1 > * { display:none !important; }
+main > nav + div + section h1::before,
+main > nav + div + section h1::after {
+  display:block;
+  font-family:'Cormorant', 'Times New Roman', serif;
+  font-weight:300;
+  font-style:normal;
+  font-size:clamp(64px,9.2vw,150px);
+  line-height:.82;
+  text-shadow:0 14px 50px rgba(0,0,0,.45);
+}
+main > nav + div + section h1::before { content:"MORE THAN WATER."; color:#f6f8fa; }
+main > nav + div + section h1::after { content:"A HIGHER STANDARD."; color:#55a6e8; font-style:italic; }
+main > nav + div + section > div:nth-of-type(4) > div > div:last-of-type {
+  margin-left:0 !important;
+  margin-top:30px !important;
+  max-width:520px;
+  padding-left:18px;
+  border-left:2px solid #c5a55a;
+}
+main > nav + div + section > div:nth-of-type(4) > div > div:last-of-type p {
+  max-width:520px !important;
+  color:rgba(246,248,250,.72) !important;
+  font-size:clamp(14px,1.15vw,18px) !important;
+}
+
+/* Make the rest of the page read like the dense mockup instead of loose concept art. */
+main > section:not(:first-of-type) { border-bottom:1px solid rgba(9,13,18,.08); }
+.collections-grid, .lifestyle-grid { gap:4px !important; }
+.collections-grid > *, .lifestyle-grid > * { overflow:hidden; }
+
+@media (max-width:768px) {
+  main > nav + div + section > div:nth-of-type(4) { width:calc(100% - 40px) !important; left:20px !important; bottom:120px !important; }
+  main > nav + div + section h1::before,
+  main > nav + div + section h1::after { font-size:clamp(48px,15vw,76px); }
+  main > nav + div + section > div:nth-of-type(4) > div > div:first-child::after { font-size:7px; letter-spacing:.18em; }
+}
