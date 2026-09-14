@@ -23,6 +23,8 @@ if (route.includes('process.env.GHL_LOCATION_ID')) {
 }
 requireText(routePath, "const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';", 'Infinity CRM destination');
 requireText(routePath, "const BRAND_KEY = 'infinity';", 'Infinity brand identity');
+requireText(routePath, "process.env.INFINITY_GHL_EXECUTION_CERTIFIED === 'true'", 'Infinity CRM certification gate');
+requireText(routePath, 'if (!CRM_EXECUTION_CERTIFIED) return false;', 'Infinity CRM fail-closed behavior');
 requireText(routePath, "formType === 'email_updates'", 'Infinity marketing form scope');
 requireText(routePath, 'body.contact_consent === true', 'Infinity explicit contact consent');
 requireText(routePath, 'body.marketing_consent === true', 'Infinity explicit marketing consent');
