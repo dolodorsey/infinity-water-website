@@ -29,6 +29,9 @@ jobs:
       - name: Verify Infinity isolation contract
         run: node scripts/verify-enterprise-contract.mjs
 
+      - name: Verify Infinity intake resilience behavior
+        run: node scripts/test-intake-resilience.mjs
+
       - name: Audit complete dependency graph
         shell: bash
         run: |
