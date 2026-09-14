@@ -4,9 +4,11 @@ const BRAND_KEY = 'infinity';
 const BRAND_NAME = 'Infinity Water';
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';
+const CRM_EXECUTION_CERTIFIED = process.env.INFINITY_GHL_EXECUTION_CERTIFIED === 'true';
 const MAX_BODY_BYTES = 64 * 1024;
 const CRM_TIMEOUT_MS = 8000;
 const INQUIRY_CONSENT_SCOPE = 'Inquiry response only. Marketing consent: not granted by this form.';
+const MARKETING_CONSENT_SCOPE = 'Explicit opt-in: Infinity Water launch and placement updates. Marketing consent granted.';
 
 function clean(value, max = 5000) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -42,7 +44,17 @@ function formDetails(formType, fields) {
   return [`[${formType}]`, ...lines].join('\n').slice(0, 5000);
 }
 
-async function storeLead({ formType, name, email, phone, source, fields, utm }) {
+async function storeLead({
+  formType,
+  name,
+  email,
+  phone,
+  source,
+  fields,
+  utm,
+  contactConsent,
+  marketingConsent,
+}) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, '');
   const key =
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
@@ -78,9 +90,9 @@ async function storeLead({ formType, name, email, phone, source, fields, utm }) 
       details: formDetails(formType, fields),
       reference,
       workflow_status: 'submitted',
-      contact_consent: false,
-      marketing_consent: false,
-      consent_at: null,
+      contact_consent: contactConsent,
+      marketing_consent: marketingConsent,
+      consent_at: marketingConsent ? new Date().toISOString() : null,
       source_page: source || `${BRAND_NAME} Website`,
       utm,
     }),
@@ -96,7 +108,9 @@ async function storeLead({ formType, name, email, phone, source, fields, utm }) 
   return reference;
 }
 
-async function syncOptionalCrm({ formType, name, email, phone, fields }) {
+async function syncOptionalCrm({ formType, name, email, phone, fields, marketingConsent }) {
+  if (!CRM_EXECUTION_CERTIFIED) return false;
+
   const pitToken = process.env.GHL_PIT_TOKEN;
   if (!pitToken) return false;
 
@@ -117,7 +131,12 @@ async function syncOptionalCrm({ formType, name, email, phone, fields }) {
       phone: phone || undefined,
       locationId: GHL_LOCATION_ID,
       source: `${BRAND_NAME}: ${formType.replaceAll('_', ' ')}`,
-      tags: [`form_${formType}`, 'website_form', BRAND_KEY],
+      tags: [
+        `form_${formType}`,
+        'website_form',
+        BRAND_KEY,
+        marketingConsent ? 'marketing_opt_in' : 'inquiry_response_only',
+      ],
     }),
   });
 
@@ -126,6 +145,7 @@ async function syncOptionalCrm({ formType, name, email, phone, fields }) {
   const contactId = contact?.contact?.id;
   if (!contactId) return true;
 
+  const consentScope = marketingConsent ? MARKETING_CONSENT_SCOPE : INQUIRY_CONSENT_SCOPE;
   await fetch(`${GHL_API}/contacts/${contactId}/notes`, {
     method: 'POST',
     cache: 'no-store',
@@ -136,7 +156,7 @@ async function syncOptionalCrm({ formType, name, email, phone, fields }) {
       Version: '2021-07-28',
     },
     body: JSON.stringify({
-      body: `${INQUIRY_CONSENT_SCOPE}\n\n${formDetails(formType, fields)}`,
+      body: `${consentScope}\n\n${formDetails(formType, fields)}`,
     }),
   }).catch(() => undefined);
 
@@ -176,6 +196,10 @@ export async function POST(request) {
     const source = clean(body.source, 500);
     const fields = cleanFields(body.fields || body.form_data);
     const utm = cleanUtm(body.utm);
+    const marketingOptIn =
+      formType === 'email_updates' &&
+      body.contact_consent === true &&
+      body.marketing_consent === true;
 
     if (clean(fields.company_website, 200)) {
       return NextResponse.json({ success: true });
@@ -192,10 +216,32 @@ export async function POST(request) {
       );
     }
 
-    const reference = await storeLead({ formType, name, email, phone, source, fields, utm });
-    const crmSynced = await syncOptionalCrm({ formType, name, email, phone, fields }).catch(
-      () => false
-    );
+    if (formType === 'email_updates' && !marketingOptIn) {
+      return NextResponse.json(
+        { success: false, error: 'Please confirm consent to receive Infinity Water updates.' },
+        { status: 400 }
+      );
+    }
+
+    const reference = await storeLead({
+      formType,
+      name,
+      email,
+      phone,
+      source,
+      fields,
+      utm,
+      contactConsent: marketingOptIn,
+      marketingConsent: marketingOptIn,
+    });
+    const crmSynced = await syncOptionalCrm({
+      formType,
+      name,
+      email,
+      phone,
+      fields,
+      marketingConsent: marketingOptIn,
+    }).catch(() => false);
 
     if (!crmSynced) {
       console.warn('Infinity CRM sync deferred', { reference });
@@ -203,11 +249,13 @@ export async function POST(request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Received. Our sales team will be in touch.',
+      message: marketingOptIn
+        ? 'You are subscribed to Infinity Water updates.'
+        : 'Received. Our sales team will be in touch.',
       reference,
       crmSynced,
-      consentScope: 'inquiry_response_only',
-      marketingConsent: false,
+      consentScope: marketingOptIn ? 'explicit_marketing_opt_in' : 'inquiry_response_only',
+      marketingConsent: marketingOptIn,
     });
   } catch (error) {
     const rateLimited = error?.message === 'rate_limit';
