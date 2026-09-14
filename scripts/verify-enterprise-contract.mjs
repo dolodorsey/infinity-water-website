@@ -23,6 +23,13 @@ if (route.includes('process.env.GHL_LOCATION_ID')) {
 }
 requireText(routePath, "const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';", 'Infinity CRM destination');
 requireText(routePath, "const BRAND_KEY = 'infinity';", 'Infinity brand identity');
+requireText(routePath, 'contact_consent: false', 'Infinity contact-consent truth');
+requireText(routePath, 'marketing_consent: false', 'Infinity marketing-consent truth');
+requireText(routePath, 'consent_at: null', 'Infinity consent timestamp truth');
+requireText(routePath, 'Marketing consent: not granted by this form.', 'Infinity CRM consent disclosure');
+if (route.includes('consent_at: new Date().toISOString()')) {
+  throw new Error('Infinity consent integrity: inquiry submission must not fabricate explicit consent');
+}
 
 const connectPath = 'src/app/connect/page.jsx';
 const connect = requireText(
@@ -65,6 +72,15 @@ requireText(migrationPath, 'create table public.infinity_quote_requests', 'Infin
 requireText(migrationPath, 'revoke all on table public.infinity_quote_requests from anon, authenticated;', 'Infinity least privilege');
 requireText(migrationPath, 'grant insert on table public.infinity_quote_requests to anon, authenticated;', 'Infinity public intake contract');
 requireText(migrationPath, "assigned_team = 'Infinity Water Sales'", 'Infinity ownership boundary');
+
+const consentColumnsPath = 'supabase/migrations/20260914121500_infinity_consent_integrity_columns.sql';
+requireText(consentColumnsPath, 'contact_consent boolean not null default false', 'Infinity contact-consent column');
+requireText(consentColumnsPath, 'marketing_consent boolean not null default false', 'Infinity marketing-consent column');
+
+const consentPolicyPath = 'supabase/migrations/20260914124500_infinity_public_intake_consent_truth.sql';
+requireText(consentPolicyPath, 'contact_consent is false', 'Infinity public contact-consent policy');
+requireText(consentPolicyPath, 'marketing_consent is false', 'Infinity public marketing-consent policy');
+requireText(consentPolicyPath, 'consent_at is null', 'Infinity public consent timestamp policy');
 
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 if (packageJson.dependencies?.next !== '16.3.4') {

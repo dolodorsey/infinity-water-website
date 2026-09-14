@@ -6,6 +6,7 @@ const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';
 const MAX_BODY_BYTES = 64 * 1024;
 const CRM_TIMEOUT_MS = 8000;
+const INQUIRY_CONSENT_SCOPE = 'Inquiry response only. Marketing consent: not granted by this form.';
 
 function clean(value, max = 5000) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -77,7 +78,9 @@ async function storeLead({ formType, name, email, phone, source, fields, utm }) 
       details: formDetails(formType, fields),
       reference,
       workflow_status: 'submitted',
-      consent_at: new Date().toISOString(),
+      contact_consent: false,
+      marketing_consent: false,
+      consent_at: null,
       source_page: source || `${BRAND_NAME} Website`,
       utm,
     }),
@@ -132,7 +135,9 @@ async function syncOptionalCrm({ formType, name, email, phone, fields }) {
       Authorization: `Bearer ${pitToken}`,
       Version: '2021-07-28',
     },
-    body: JSON.stringify({ body: formDetails(formType, fields) }),
+    body: JSON.stringify({
+      body: `${INQUIRY_CONSENT_SCOPE}\n\n${formDetails(formType, fields)}`,
+    }),
   }).catch(() => undefined);
 
   return true;
@@ -201,6 +206,8 @@ export async function POST(request) {
       message: 'Received. Our sales team will be in touch.',
       reference,
       crmSynced,
+      consentScope: 'inquiry_response_only',
+      marketingConsent: false,
     });
   } catch (error) {
     const rateLimited = error?.message === 'rate_limit';
