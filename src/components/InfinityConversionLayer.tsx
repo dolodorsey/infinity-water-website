@@ -11,6 +11,7 @@ export default function InfinityConversionLayer() {
     setStatus("sending");
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") ?? "");
+    const marketingConsent = form.get("marketing_consent") === "on";
     try {
       const response = await fetch("/api/forms", {
         method: "POST",
@@ -21,9 +22,10 @@ export default function InfinityConversionLayer() {
           name: "Email subscriber",
           email,
           source: "Infinity Water website conversion layer",
+          contact_consent: marketingConsent,
+          marketing_consent: marketingConsent,
           fields: {
             intent: "Launch and availability updates",
-            consent: true,
             company_website: String(form.get("company_website") ?? ""),
           },
         }),
@@ -50,6 +52,10 @@ export default function InfinityConversionLayer() {
           <input className="infinity-honeypot" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
           <button disabled={status === "sending"}>{status === "sending" ? "…" : status === "sent" ? "✓" : "Join ↗"}</button>
         </div>
+        <label className="infinity-conversion__consent">
+          <input name="marketing_consent" type="checkbox" required />
+          <span>I agree to receive Infinity Water launch and placement updates. I can unsubscribe at any time.</span>
+        </label>
         <span aria-live="polite">{status === "error" ? "Try again" : status === "sent" ? "You’re on the list." : ""}</span>
       </form>
     </aside>
