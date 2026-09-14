@@ -4,6 +4,7 @@ const BRAND_KEY = 'infinity';
 const BRAND_NAME = 'Infinity Water';
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';
+const CRM_EXECUTION_CERTIFIED = process.env.INFINITY_GHL_EXECUTION_CERTIFIED === 'true';
 const MAX_BODY_BYTES = 64 * 1024;
 const CRM_TIMEOUT_MS = 8000;
 const INQUIRY_CONSENT_SCOPE = 'Inquiry response only. Marketing consent: not granted by this form.';
@@ -108,6 +109,8 @@ async function storeLead({
 }
 
 async function syncOptionalCrm({ formType, name, email, phone, fields, marketingConsent }) {
+  if (!CRM_EXECUTION_CERTIFIED) return false;
+
   const pitToken = process.env.GHL_PIT_TOKEN;
   if (!pitToken) return false;
 
