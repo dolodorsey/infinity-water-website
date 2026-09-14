@@ -23,12 +23,27 @@ if (route.includes('process.env.GHL_LOCATION_ID')) {
 }
 requireText(routePath, "const GHL_LOCATION_ID = 'OQcKgzwCYdUYLSjZnRBE';", 'Infinity CRM destination');
 requireText(routePath, "const BRAND_KEY = 'infinity';", 'Infinity brand identity');
-requireText(routePath, 'contact_consent: false', 'Infinity contact-consent truth');
-requireText(routePath, 'marketing_consent: false', 'Infinity marketing-consent truth');
-requireText(routePath, 'consent_at: null', 'Infinity consent timestamp truth');
-requireText(routePath, 'Marketing consent: not granted by this form.', 'Infinity CRM consent disclosure');
-if (route.includes('consent_at: new Date().toISOString()')) {
-  throw new Error('Infinity consent integrity: inquiry submission must not fabricate explicit consent');
+requireText(routePath, "formType === 'email_updates'", 'Infinity marketing form scope');
+requireText(routePath, 'body.contact_consent === true', 'Infinity explicit contact consent');
+requireText(routePath, 'body.marketing_consent === true', 'Infinity explicit marketing consent');
+requireText(routePath, 'contact_consent: contactConsent', 'Infinity persisted contact consent');
+requireText(routePath, 'marketing_consent: marketingConsent', 'Infinity persisted marketing consent');
+requireText(routePath, 'consent_at: marketingConsent ? new Date().toISOString() : null', 'Infinity truthful consent timestamp');
+requireText(routePath, "marketingConsent ? 'marketing_opt_in' : 'inquiry_response_only'", 'Infinity CRM consent tagging');
+requireText(routePath, 'Marketing consent: not granted by this form.', 'Infinity inquiry CRM consent disclosure');
+requireText(routePath, 'Marketing consent granted.', 'Infinity marketing CRM consent disclosure');
+
+const conversionPath = 'src/components/InfinityConversionLayer.tsx';
+const conversion = requireText(
+  conversionPath,
+  'name="marketing_consent" type="checkbox" required',
+  'Infinity marketing checkbox'
+);
+requireText(conversionPath, 'contact_consent: marketingConsent', 'Infinity marketing contact consent payload');
+requireText(conversionPath, 'marketing_consent: marketingConsent', 'Infinity marketing consent payload');
+requireText(conversionPath, 'I can unsubscribe at any time.', 'Infinity unsubscribe disclosure');
+if (conversion.includes('consent: true')) {
+  throw new Error('Infinity consent integrity: implicit hard-coded consent is not allowed');
 }
 
 const connectPath = 'src/app/connect/page.jsx';
@@ -78,9 +93,16 @@ requireText(consentColumnsPath, 'contact_consent boolean not null default false'
 requireText(consentColumnsPath, 'marketing_consent boolean not null default false', 'Infinity marketing-consent column');
 
 const consentPolicyPath = 'supabase/migrations/20260914124500_infinity_public_intake_consent_truth.sql';
-requireText(consentPolicyPath, 'contact_consent is false', 'Infinity public contact-consent policy');
-requireText(consentPolicyPath, 'marketing_consent is false', 'Infinity public marketing-consent policy');
-requireText(consentPolicyPath, 'consent_at is null', 'Infinity public consent timestamp policy');
+requireText(consentPolicyPath, 'contact_consent is false', 'Infinity inquiry contact-consent policy');
+requireText(consentPolicyPath, 'marketing_consent is false', 'Infinity inquiry marketing-consent policy');
+requireText(consentPolicyPath, 'consent_at is null', 'Infinity inquiry consent timestamp policy');
+
+const explicitConsentPolicyPath = 'supabase/migrations/20260914125500_infinity_explicit_marketing_consent.sql';
+requireText(explicitConsentPolicyPath, "inquiry_type = 'email_updates'", 'Infinity marketing policy scope');
+requireText(explicitConsentPolicyPath, 'contact_consent is true', 'Infinity marketing contact consent policy');
+requireText(explicitConsentPolicyPath, 'marketing_consent is true', 'Infinity marketing consent policy');
+requireText(explicitConsentPolicyPath, 'consent_at is not null', 'Infinity marketing consent timestamp policy');
+requireText(explicitConsentPolicyPath, "inquiry_type <> 'email_updates'", 'Infinity inquiry/marketing separation');
 
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 if (packageJson.dependencies?.next !== '16.3.4') {
