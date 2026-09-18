@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import InfinityExperienceLayer from "@/components/InfinityExperienceLayer";
 import InfinityConversionLayer from "@/components/InfinityConversionLayer";
+import InstallAppPrompt from "@/components/InstallAppPrompt";
 import "./globals.css";
 import "./experience-layer.css";
 import "./clean-hero.css";
@@ -31,6 +32,9 @@ export const metadata: Metadata = {
   category: "Food & Beverage",
   creator: "Infinity Water",
   publisher: "Infinity Water",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "Infinity Water", statusBarStyle: "black-translucent" },
+  icons: { icon: [{ url:"/api/pwa-icon?size=192", sizes:"192x192", type:"image/png" }, { url:"/api/pwa-icon?size=512", sizes:"512x512", type:"image/png" }], apple:[{ url:"/api/pwa-icon?size=180", sizes:"180x180", type:"image/png" }] },
   alternates: { canonical: `${SITE_URL}/` },
   robots: {
     index: true,
@@ -100,6 +104,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
         <InfinityExperienceLayer/>
+        <InstallAppPrompt/>
         {children}
         <InfinityConversionLayer/>
       </body>
